@@ -21,6 +21,7 @@ public class UserSprite {
     private Animation userAnimation;
     private Texture texture;
     private boolean enemyColliding = false, staticObjectColliding = false;
+    public static final int MOVE = 10;
 
     public UserSprite(String userSprite, int x, int y) {
         position = new Vector2(x, y);
@@ -30,9 +31,13 @@ public class UserSprite {
         velocity = new Vector2();
     }
 
+    // Change to updateX and create updateY.
     public void update(float deltaTime) {
 //        userAnimation.update(deltaTime);
         velocity.scl(deltaTime);
+        position.x += MOVE;
+        position.add(position.x, position.y);
+        System.out.println("move sprite");
     }
     
     public void updateBounds() {
@@ -45,5 +50,13 @@ public class UserSprite {
     
     public float getY() {
         return position.y;
+    }
+    
+    public Texture getTexture() {
+        return texture;
+    }
+    
+    public void dispose() {
+        texture.dispose();
     }
 }

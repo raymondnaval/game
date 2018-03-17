@@ -20,7 +20,7 @@ public abstract class State {
         mouse = new Vector2();
     }
     
-    protected abstract void handleInput();
+    protected abstract void handleInput(float dt);
     public abstract void update(float dt);
     public abstract void render(SpriteBatch sb);
     public abstract void dispose();
