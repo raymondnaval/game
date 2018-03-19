@@ -12,8 +12,8 @@ import com.raymondn.game.states.PlayState;
 
 public class MainGame extends ApplicationAdapter {
 
-    public static final int WIDTH = 1024;
-    public static final int HEIGHT = 896;
+    public static final int WIDTH = 512;
+    public static final int HEIGHT = 448;
     public static final String TITLE = "Legend of the Industrial Hygienist";
            
     SpriteBatch batch;

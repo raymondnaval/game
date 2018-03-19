@@ -8,6 +8,7 @@ package com.raymondn.game.states;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.raymondn.game.MainGame;
 
 public abstract class State {
     protected OrthographicCamera cam;
@@ -16,7 +17,7 @@ public abstract class State {
     
     public State(GameStateManager gsm) {
         this.gsm = gsm;
-        cam = new OrthographicCamera();
+        cam = new OrthographicCamera(MainGame.WIDTH, MainGame.HEIGHT);
         mouse = new Vector2();
     }
     

@@ -22,7 +22,9 @@ public class UserSprite {
     private Animation userAnimation;
     private Texture texture;
     private boolean enemyColliding = false, staticObjectColliding = false;
-    public static final int MOVE = 1;
+    private float moveSpeed = 1.0f;
+    public static final float DEFAULT_SPEED = 1.0f;
+    public static final int SPACE_IN_FRONT = 20;
 
     public UserSprite(String userSprite, int x, int y) {
         position = new Vector2(x, y);
@@ -32,17 +34,21 @@ public class UserSprite {
         velocity = new Vector2();
         
     }
+    
+    public void setMoveSpeed(float move) {
+        moveSpeed = move;
+    }
 
     public void updateX(float deltaTime, boolean moveRight) {
 //        userAnimation.update(deltaTime);
         velocity.scl(deltaTime);
         if (moveRight) {
-            position.x += MOVE;
+            position.x += moveSpeed;
         } else {
-            position.x -= MOVE;
+            position.x -= moveSpeed;
         }
         position.set(position.x, position.y);
-        System.out.println("move sprite: " + position.x + " " + position.y);
+        System.out.println("move sprite: " + position.x);
     }
 
     public void updateY(float deltaTime) {
@@ -54,6 +60,14 @@ public class UserSprite {
 
     public float getX() {
         return position.x;
+    }
+    
+    public float getCenterX() {
+        return position.x + (texture.getWidth()/2);
+    }
+    
+    public float getEndX() {
+        return position.x + texture.getWidth();
     }
 
     public float getY() {
