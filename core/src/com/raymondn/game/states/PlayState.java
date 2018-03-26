@@ -2,92 +2,162 @@ package com.raymondn.game.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.raymondn.game.MainGame;
-import com.raymondn.game.sprites.UserSprite;
+import com.raymondn.game.sprites.PlayerSprite;
+import com.raymondn.game.tools.WorldCreator;
 
 /**
  *
  * @author Raymond Naval <raymondnaval@gmail.com>
  */
-public class PlayState extends State {
+public class PlayState implements Screen {
 
-    private UserSprite user;
-    private Sprite bg;
+    private PlayerSprite player;
+    private Viewport gamePort;
+    private MainGame game;
+    private OrthographicCamera gameView;
 
-    public PlayState(GameStateManager gsm) {
-        super(gsm);
-        user = new UserSprite("protaganist.jpg", 10, 10);
-        bg = new Sprite(new Texture("TheWorld.png"));
-        bg.setPosition(0, 0);
-        cam.position.set(MainGame.WIDTH / 2, MainGame.HEIGHT / 2, 0);
-        System.out.println(cam.position.x);
+    // Map variables.
+    private TmxMapLoader mapLoader;
+    private TiledMap map;
+    private OrthogonalTiledMapRenderer renderer;
+
+    // Box2d variables.
+    private World world;
+    private Box2DDebugRenderer box2DRenderer;
+
+    private TextureAtlas atlas;
+
+    public PlayState(MainGame game) {
+        this.game = game;
+
+        atlas = new TextureAtlas("player_sprite.atlas");
+
+        gameView = new OrthographicCamera();
+        gamePort = new FitViewport(MainGame.WIDTH / MainGame.PIXELS_PER_METER, MainGame.HEIGHT / MainGame.PIXELS_PER_METER, gameView);
+        gamePort.apply();
+        gameView.position.set(MainGame.WIDTH / 2, MainGame.HEIGHT / 2, 0);
+
+        // Load map.
+        mapLoader = new TmxMapLoader();
+        map = mapLoader.load("level0.tmx");
+        renderer = new OrthogonalTiledMapRenderer(map, 1 / MainGame.PIXELS_PER_METER);
+
+        // Center game camera.
+        gameView.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
+
+        world = new World(new Vector2(0, -5), true);
+        box2DRenderer = new Box2DDebugRenderer();
+
+        new WorldCreator(map, world);
+
+        player = new PlayerSprite(world, this);
     }
+    
+    public TextureAtlas getAtlas() {
+        return atlas;
+    }
+    
 
-    @Override
-    protected void handleInput(final float deltaTime) {
+    protected void handleInput(float deltaTime) {
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            player.box2dBody.applyLinearImpulse(new Vector2(0, 4f), player.box2dBody.getWorldCenter(), true);
+        }
 
         // Run button.
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            user.setMoveSpeed(2.5f);
-        } else {
-            user.setMoveSpeed(UserSprite.DEFAULT_SPEED);
+//        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+//            user.setMoveSpeed(2.5f);
+//        } else {
+//            user.setMoveSpeed(UserSprite.DEFAULT_SPEED);
+//        }
+//
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.box2dBody.getLinearVelocity().x <= 2) {
+            player.box2dBody.applyLinearImpulse(new Vector2(0.1f, 0), player.box2dBody.getWorldCenter(), true);
         }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            user.updateX(deltaTime, true);
-
-            // If center of user sprite is at midpoint of viewport - SPACE_IN_FRONT 
-            // && camera isn't at end of screen, 
-            // scroll right. 
-            if ((user.getCenterX() >= cam.viewportWidth / 2 - UserSprite.SPACE_IN_FRONT)
-                    && cam.position.x < bg.getWidth() - cam.viewportWidth / 2 - 1) {
-                cam.position.x = user.getCenterX() + UserSprite.SPACE_IN_FRONT;
-            }
-
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-
-            // if center of user sprite is at midpoint of viewport + SPACE_IN_FRONT
-            // && camera isn't at end of screen,
-            // && camera isn't at beginning of screen,
-            // scroll left.
-            if ((user.getCenterX() >= cam.viewportWidth / 2 + UserSprite.SPACE_IN_FRONT)
-                    && user.getCenterX() < bg.getWidth() - cam.viewportWidth / 2 + UserSprite.SPACE_IN_FRONT
-                    && cam.position.x >= -cam.viewportWidth) {
-                cam.position.x = user.getCenterX() - UserSprite.SPACE_IN_FRONT;
-            }
-
-            user.updateX(deltaTime, false);
-        } else {
-
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.box2dBody.getLinearVelocity().x >= -2) {
+            player.box2dBody.applyLinearImpulse(new Vector2(-0.1f, 0), player.box2dBody.getWorldCenter(), true);
         }
-
     }
 
-    @Override
     public void update(float dt) {
         handleInput(dt);
-        System.out.println("cam position: " + cam.position.x);
+        world.step(1 / 30f, 6, 2);
+        
+        player.update(dt);
 
-        cam.update();
+        gameView.position.x = player.box2dBody.getPosition().x;
+
+        // Update game camera with correct coordinates after changes.
+        gameView.update();
+
+        // Only render what's seen in the game world.
+        renderer.setView(gameView);
     }
 
     @Override
-    public void render(SpriteBatch sb) {
-        sb.setProjectionMatrix(cam.combined);
-        sb.begin();
-        sb.draw(bg, 0, 0);
-        sb.draw(user.getTexture(), user.getX(), user.getY());
-        sb.end();
+    public void render(float delta) {
+        update(delta);
+
+        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Render game map.
+        renderer.render();
+
+        // Render Box2D debug lines.
+        box2DRenderer.render(world, gameView.combined);
+        
+        game.getBatch().setProjectionMatrix(gameView.combined);
+        game.getBatch().begin();
+        player.draw(game.getBatch());
+        game.getBatch().end();
+        
     }
 
     @Override
     public void dispose() {
-        user.dispose();
+        map.dispose();
+        renderer.dispose();
+        world.dispose();
+        box2DRenderer.dispose();
+    }
+
+    @Override
+    public void show() {
+
+    }
+
+    @Override
+    public void resize(int width, int height) {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
     }
 
 }

@@ -11,18 +11,22 @@ import com.badlogic.gdx.math.Vector2;
 import com.raymondn.game.MainGame;
 
 public abstract class State {
-    protected OrthographicCamera cam;
+    protected OrthographicCamera gameView;
     protected Vector2 mouse;
     protected GameStateManager gsm;
     
     public State(GameStateManager gsm) {
         this.gsm = gsm;
-        cam = new OrthographicCamera(MainGame.WIDTH, MainGame.HEIGHT);
+        gameView = new OrthographicCamera();
+        mouse = new Vector2();
+    }
+    
+    public State() {
+        gameView = new OrthographicCamera();
         mouse = new Vector2();
     }
     
     protected abstract void handleInput(float dt);
     public abstract void update(float dt);
-    public abstract void render(SpriteBatch sb);
     public abstract void dispose();
 }
