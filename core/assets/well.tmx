@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.3" orientation="orthogonal" renderorder="right-down" width="50" height="45" tilewidth="16" tileheight="16" infinite="0" nextobjectid="12">
+ <tileset firstgid="1" source="well.tsx"/>
+ <layer name="Tile Layer 1" width="50" height="45">
+  <data encoding="base64" compression="zlib">
+   eJztmM0OwiAQhBGrPeLfyfd/UDlIssHOwqYlMoTDpJFd6U4/Qpd659w5aom6RF2jVnH1II7G75WyzutFbCsnRN2+cz+inlEvcUVxOX7KpN1v3chH88rxkg90LwsP5APVlOdbeHiQw8YjDMID+WjBI8WO4iH5MvOQPlA9bDys+3WPPNCaYuOh+WDkwb5faT6YeCyD8Bjp/THf55PH5PFbo3f682HhUfLBwCOtJXYe6TzIziONj8SDud+VPJjPHyPxCIPwKM3JxEPzwcJD9ljMPEo+2HiU4i141Pqw8Kh5rkfzqF1XvfB479QRPCy9I/rfXh+teKBctD/0yqPGR6t1pZ3Pl855WNb55PFfHvnvmr4l/y7RAw/v6mqT8aDkaf1MSx7y3FE6f6DaV0WteOT11Qp5KKkVD2sdSR9fLFpf
+  </data>
+ </layer>
+ <objectgroup name="ground">
+  <object id="11" x="272" y="544" width="256" height="176"/>
+ </objectgroup>
+ <objectgroup name="wall">
+  <object id="2" x="464" y="16" width="64" height="528"/>
+  <object id="10" x="272" y="16" width="64" height="528"/>
+ </objectgroup>
+</map>

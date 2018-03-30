@@ -48,17 +48,16 @@ public class PlayState implements Screen {
         gameView = new OrthographicCamera();
         gamePort = new FitViewport(MainGame.WIDTH / MainGame.PIXELS_PER_METER, MainGame.HEIGHT / MainGame.PIXELS_PER_METER, gameView);
         gamePort.apply();
-        gameView.position.set(MainGame.WIDTH / 2, MainGame.HEIGHT / 2, 0);
 
         // Load map.
         mapLoader = new TmxMapLoader();
-        map = mapLoader.load("level0.tmx");
+        map = mapLoader.load("well.tmx");
         renderer = new OrthogonalTiledMapRenderer(map, 1 / MainGame.PIXELS_PER_METER);
 
         // Center game camera.
         gameView.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
-        world = new World(new Vector2(0, -5), true);
+//        world = new World(new Vector2(0, -1f), true);
         box2DRenderer = new Box2DDebugRenderer();
 
         new WorldCreator(map, world);
@@ -74,7 +73,7 @@ public class PlayState implements Screen {
     protected void handleInput(float deltaTime) {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            player.box2dBody.applyLinearImpulse(new Vector2(0, 4f), player.box2dBody.getWorldCenter(), true);
+            player.box2dBody.applyLinearImpulse(new Vector2(0, 1f), player.box2dBody.getWorldCenter(), true);
         }
 
         // Run button.
@@ -98,7 +97,7 @@ public class PlayState implements Screen {
         
         player.update(dt);
 
-        gameView.position.x = player.box2dBody.getPosition().x;
+//        gameView.position.x = player.box2dBody.getPosition().x;
 
         // Update game camera with correct coordinates after changes.
         gameView.update();

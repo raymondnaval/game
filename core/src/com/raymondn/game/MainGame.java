@@ -15,8 +15,8 @@ import com.raymondn.game.states.PlayState;
 
 public class MainGame extends Game {
 
-    public static final int WIDTH = 585;
-    public static final int HEIGHT = 512;
+    public static final int WIDTH = 800;
+    public static final int HEIGHT = 720;
     public static final float PIXELS_PER_METER = 100;
     public static final String TITLE = "Legend of the Industrial Hygienist";
            

@@ -1,5 +1,7 @@
 package com.raymondn.game.sprites;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -21,9 +23,9 @@ public class PlayerSprite extends Sprite {
     public World world;
     public Body box2dBody;
     private TextureRegion playerStand;
-    private int playerSizeX = 64;
-    private int playerSizeY = 64;
-    private Animation<TextureRegion> playerRun;
+    private int playerSizeX = 16;
+    private int playerSizeY = 16;
+//    private Animation<TextureRegion> playerRun;
     private Animation<TextureRegion> playerJump;
     private float stateTimer;
     private boolean movingRight;
@@ -45,16 +47,16 @@ public class PlayerSprite extends Sprite {
         Array<TextureRegion> frames = new Array<TextureRegion>();
 
         // Add moving animation frames to playerRun object.
-        for (int i = 1; i < 3; i++) {
-            frames.add(new TextureRegion(getTexture(), i * playerSizeX, 0, playerSizeX, playerSizeY));
-            playerRun = new Animation(0.1f, frames);
-            System.out.println(i * playerSizeX);
-        }
-        frames.clear();
-
+//        for (int i = 1; i < 3; i++) {
+//            frames.add(new TextureRegion(getTexture(), i * playerSizeX, 0, playerSizeX, playerSizeY));
+//            playerRun = new Animation(0.1f, frames);
+//            System.out.println(i * playerSizeX);
+//        }
+//        frames.clear();
         definePlayerSprite();
-        playerStand = new TextureRegion(getTexture(), 0, 0, playerSizeX, playerSizeY);
+        playerStand = new TextureRegion(new Texture("protaganist_small.png"), 0, 0, playerSizeX, playerSizeY);
         setBounds(0, 0, playerSizeX / MainGame.PIXELS_PER_METER, playerSizeY / MainGame.PIXELS_PER_METER);
+        Gdx.app.log("width coord: height coord", MainGame.WIDTH / 2 / MainGame.PIXELS_PER_METER + "," + ((MainGame.WIDTH / 2) + playerSizeX) / MainGame.PIXELS_PER_METER + " : ");
         setRegion(playerStand);
     }
 
@@ -70,8 +72,8 @@ public class PlayerSprite extends Sprite {
         TextureRegion region;
         switch (currentState) {
             case RUNNING:
-                region = playerRun.getKeyFrame(stateTimer, true);
-                break;
+//                region = playerRun.getKeyFrame(stateTimer, true);
+//                break;
             case STANDING:
             default:
                 region = playerStand;
@@ -102,7 +104,11 @@ public class PlayerSprite extends Sprite {
 
     public void definePlayerSprite() {
         BodyDef bdef = new BodyDef();
-        bdef.position.set(playerSizeX / MainGame.PIXELS_PER_METER, playerSizeY / MainGame.PIXELS_PER_METER);
+        
+        // Set starting position of sprite.
+        bdef.position.set(MainGame.WIDTH / 2 / MainGame.PIXELS_PER_METER, MainGame.HEIGHT / 2 / MainGame.PIXELS_PER_METER);
+        
+        
         bdef.type = BodyDef.BodyType.DynamicBody;
 
         box2dBody = world.createBody(bdef);
