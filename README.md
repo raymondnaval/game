@@ -1,6 +1,9 @@
 # New Game
 Creating a game using the LibGdx engine. Could be Metroidvania style. Could be Connect 4. Could be both.
 
+4/3/18
+Created boundaries for Tetris "well".
+
 3/29/18
 Rewriting most of the code again. Created a Tetris "well" and a descending sprite in the center.
 
