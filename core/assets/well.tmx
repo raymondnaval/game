@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.3" orientation="orthogonal" renderorder="right-down" width="50" height="45" tilewidth="16" tileheight="16" infinite="0" nextobjectid="12">
+<map version="1.0" tiledversion="1.1.3" orientation="orthogonal" renderorder="right-down" width="50" height="45" tilewidth="16" tileheight="16" infinite="0" nextobjectid="20">
  <tileset firstgid="1" source="well.tsx"/>
- <layer name="Tile Layer 1" width="50" height="45">
+ <layer name="background" width="50" height="45">
   <data encoding="base64" compression="zlib">
-   eJztmM0OwiAQhBGrPeLfyfd/UDlIssHOwqYlMoTDpJFd6U4/Qpd659w5aom6RF2jVnH1II7G75WyzutFbCsnRN2+cz+inlEvcUVxOX7KpN1v3chH88rxkg90LwsP5APVlOdbeHiQw8YjDMID+WjBI8WO4iH5MvOQPlA9bDys+3WPPNCaYuOh+WDkwb5faT6YeCyD8Bjp/THf55PH5PFbo3f682HhUfLBwCOtJXYe6TzIziONj8SDud+VPJjPHyPxCIPwKM3JxEPzwcJD9ljMPEo+2HiU4i141Pqw8Kh5rkfzqF1XvfB479QRPCy9I/rfXh+teKBctD/0yqPGR6t1pZ3Pl855WNb55PFfHvnvmr4l/y7RAw/v6mqT8aDkaf1MSx7y3FE6f6DaV0WteOT11Qp5KKkVD2sdSR9fLFpf
+   eJy9WMuOg0AMQ6ILV2j5/29dDh2tZdlOoOoeopZhHnFezjBP0/Q45eeU5ZT1lO0t8/vdDHNmkjF3p/EHvNvEOlyP+y/ieRXP41etQb2r89XZas2YswXhuR0cQxwOtnHn/BnmP5t+mMW8hEONoU+UzZxePK4wvE45mn74Fo7F6Dt0Yxunuej/Y9JxoXRz4yqPEIvCkfTiPFBzUX98TrqP+Sr31umvjnRxJPuqeHP7K93UPH7v7L6HdynPGYfKjaQ7+sJhUPnu7DLs1sGRYiXpzbozlzg/sP7PMP8KDhU7Tn/UO9VUh2GdvL0cjlfYU+V5ivmKB6r4wFi7ggNzsoMjzan4i3NXjQ9Jsevqbsp1tVblPvN8imV3Vtdnqg/hfFL2R31SzChe7HLviKcd9k2xl2yk1lWxnjjd4VB6MQ+kOoI26tqpqzeOu1hgXnDCXHqV99JYwpL87Dg59YEcG25f569qjHuDxGOsf7KDq+1VfN7BoXxf9ROqhmGv6PyIONI5HdunuGJ7uTOcqJxw8b+HOY6Hunxe6e16EfaRitHKL3d0TvePTs1JmF3OI55O3fokP1S9cfXZxQPr6finU887/NTJWZfHibsdjlTb0l4JR8WBymZci1wvmPzB98mqJ6+eZ6NjxYlDT+Ye1wvh+hSPrm51cLANnA/QZqoe8/nVPndwqHeOMxOvKZ9h7VG9h/Kli8lU/yoc6vxuLUG/dHDcqacDt7vjoc/Yrsonqb6rO0HC0c2DA9Y6HOO/uvepWuN6FNXHuFpV9QyMQX0/q3CoeE8cNuqV4kWX42ivdH85xFrlL1znakaq/ZxDzAmVL1wdYV5L+YU85nCoPZbJ66tisPNd1X3TTntg7t/Fwdx2BUfqDRBD2kPlfoqrb+BIGNC+1bdYpdN/4aj6NMX3qj88Ju3HKzjGfKVzhSPZJfUNqQ4ftE+nt6t88gmO5CfOfVePGYfzBa5Rc9Jz4pLkk1Wc6eoxc2TVo7p8Tdyf+ALF+aS6s9zBUfEj83nV86JwLXL4KhyJx5Utqu8P6Zuke6984r6xuH7Hne98uhlx9uc4Ykmxl/pXvg8pHmBfVHHCNZ25upJOHjnMv+5bXJQ=
   </data>
  </layer>
- <objectgroup name="ground">
-  <object id="11" x="272" y="544" width="256" height="176"/>
+ <layer name="Tile Layer 1" width="50" height="45">
+  <data encoding="base64" compression="zlib">
+   eJztz7ENgDAQBEHTBv0XSuSEFNb6YFa67JJZS7vrtb//p+LgKOLgKOLgKOLgKOLgKOLgKOLgKOLgKOLgKOLgKOKY5bg/bkocHEUcHEUcHEUTHA9FJRLp
+  </data>
+ </layer>
+ <objectgroup name="grnd">
+  <object id="18" x="272" y="543" width="256" height="176"/>
  </objectgroup>
- <objectgroup name="wall">
+ <objectgroup name="wall" visible="0">
   <object id="2" x="464" y="16" width="64" height="528"/>
   <object id="10" x="272" y="16" width="64" height="528"/>
+ </objectgroup>
+ <objectgroup name="all_boundaries" visible="0">
+  <object id="19" x="0" y="720">
+   <polygon points="0,0 528,0 528,-704 464,-704 464,-176 336,-176 336,-704 272,-704 0,-704 0,0"/>
+  </object>
  </objectgroup>
 </map>

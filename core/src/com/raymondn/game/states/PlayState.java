@@ -57,12 +57,21 @@ public class PlayState implements Screen {
         // Center game camera.
         gameView.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
-//        world = new World(new Vector2(0, -1f), true);
+        world = new World(new Vector2(0, -1f), true);
         box2DRenderer = new Box2DDebugRenderer();
+        box2DRenderer.SHAPE_STATIC.set(1,0,0,1);
 
-        new WorldCreator(map, world);
+        new WorldCreator(this);
 
         player = new PlayerSprite(world, this);
+    }
+    
+    public World getWorld() {
+        return world;
+    }
+    
+    public TiledMap getMap() {
+        return map;
     }
     
     public TextureAtlas getAtlas() {

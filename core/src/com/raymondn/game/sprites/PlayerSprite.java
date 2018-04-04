@@ -106,8 +106,7 @@ public class PlayerSprite extends Sprite {
         BodyDef bdef = new BodyDef();
         
         // Set starting position of sprite.
-        bdef.position.set(MainGame.WIDTH / 2 / MainGame.PIXELS_PER_METER, MainGame.HEIGHT / 2 / MainGame.PIXELS_PER_METER);
-        
+        bdef.position.set(MainGame.WIDTH / 2 / MainGame.PIXELS_PER_METER, MainGame.HEIGHT / MainGame.PIXELS_PER_METER);
         
         bdef.type = BodyDef.BodyType.DynamicBody;
 
