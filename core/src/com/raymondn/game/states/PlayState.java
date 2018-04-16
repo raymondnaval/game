@@ -5,7 +5,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -15,7 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.raymondn.game.MainGame;
-import com.raymondn.game.sprites.PlayerSprite;
+import com.raymondn.game.sprites.PlayerTetrisSprite;
 import com.raymondn.game.tools.WorldCreator;
 
 /**
@@ -24,7 +26,7 @@ import com.raymondn.game.tools.WorldCreator;
  */
 public class PlayState implements Screen {
 
-    private PlayerSprite player;
+    private PlayerTetrisSprite tetrisPlayer;
     private Viewport gamePort;
     private MainGame game;
     private OrthographicCamera gameView;
@@ -39,6 +41,8 @@ public class PlayState implements Screen {
     private Box2DDebugRenderer box2DRenderer;
 
     private TextureAtlas atlas;
+
+    private float horzX, descY;
 
     public PlayState(MainGame game) {
         this.game = game;
@@ -57,34 +61,36 @@ public class PlayState implements Screen {
         // Center game camera.
         gameView.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
-        world = new World(new Vector2(0, -1f), true);
+        world = new World(new Vector2(0, -0.1f), true);
         box2DRenderer = new Box2DDebugRenderer();
-        box2DRenderer.SHAPE_STATIC.set(1,0,0,1);
+        box2DRenderer.SHAPE_STATIC.set(1, 0, 0, 1);
 
         new WorldCreator(this);
 
-        player = new PlayerSprite(world, this);
+        tetrisPlayer = new PlayerTetrisSprite(world, this);
+
     }
-    
+
     public World getWorld() {
         return world;
     }
-    
+
     public TiledMap getMap() {
         return map;
     }
-    
+
     public TextureAtlas getAtlas() {
         return atlas;
     }
-    
 
     protected void handleInput(float deltaTime) {
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            player.box2dBody.applyLinearImpulse(new Vector2(0, 1f), player.box2dBody.getWorldCenter(), true);
-        }
-
+        // DEBUG: press up to keep the Titris block afloat.
+//        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+//            descY += MainGame.TILESIZE;
+//        } else {
+//            descY -= MainGame.TILESIZE/2;
+//        }
         // Run button.
 //        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
 //            user.setMoveSpeed(2.5f);
@@ -92,27 +98,26 @@ public class PlayState implements Screen {
 //            user.setMoveSpeed(UserSprite.DEFAULT_SPEED);
 //        }
 //
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.box2dBody.getLinearVelocity().x <= 2) {
-            player.box2dBody.applyLinearImpulse(new Vector2(0.1f, 0), player.box2dBody.getWorldCenter(), true);
+        // Increment/decrement left/right by tile width.
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.box2dBody.getLinearVelocity().x >= -2) {
-            player.box2dBody.applyLinearImpulse(new Vector2(-0.1f, 0), player.box2dBody.getWorldCenter(), true);
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+
         }
     }
 
     public void update(float dt) {
         handleInput(dt);
         world.step(1 / 30f, 6, 2);
-        
-        player.update(dt);
-
-//        gameView.position.x = player.box2dBody.getPosition().x;
 
         // Update game camera with correct coordinates after changes.
         gameView.update();
 
         // Only render what's seen in the game world.
         renderer.setView(gameView);
+
+        tetrisPlayer.update(dt);
     }
 
     @Override
@@ -127,12 +132,12 @@ public class PlayState implements Screen {
 
         // Render Box2D debug lines.
         box2DRenderer.render(world, gameView.combined);
-        
+
         game.getBatch().setProjectionMatrix(gameView.combined);
         game.getBatch().begin();
-        player.draw(game.getBatch());
+        game.getBatch().draw(tetrisPlayer.getTitrisPiece(), tetrisPlayer.getX(), tetrisPlayer.getY(), .16f, .16f);
         game.getBatch().end();
-        
+
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -27,6 +28,7 @@ public class WorldCreator {
 
     private TiledMap map;
     private World world;
+    private Vector2[] wallBounds, groundBounds;
 
     public WorldCreator(PlayState play) {
         map = play.getMap();
@@ -39,12 +41,12 @@ public class WorldCreator {
         // Ground object.
         // Loop through each object in the ground layer.
         for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)) {
-            
+
             // Create a rectangle object because the the objects in the loop are all rectangles.
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
             bdef.type = BodyDef.BodyType.StaticBody; // Unmovable object.
-            
+
             // Position the rectangle exactly where its drawn on the Tile map.
             bdef.position.set((rect.getX() + rect.getWidth() / 2) / MainGame.PIXELS_PER_METER, (rect.getY() + rect.getHeight() / 2) / MainGame.PIXELS_PER_METER);
 
@@ -53,9 +55,12 @@ public class WorldCreator {
             shape.setAsBox(rect.getWidth() / 2 / MainGame.PIXELS_PER_METER, rect.getHeight() / 2 / MainGame.PIXELS_PER_METER);
             fixture.shape = shape;
             body.createFixture(fixture);
+
         }
 
         // Wall.
+        wallBounds = new Vector2[map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class).size];
+        int i = 0;
         for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
@@ -66,7 +71,16 @@ public class WorldCreator {
             shape.setAsBox(rect.getWidth() / 2 / MainGame.PIXELS_PER_METER, rect.getHeight() / 2 / MainGame.PIXELS_PER_METER);
             fixture.shape = shape;
             body.createFixture(fixture);
+
+            wallBounds[i] = new Vector2(bdef.position.x, bdef.position.y);
+            i++;
         }
+        
+        for(i=0; i<wallBounds.length; i++) {
+            Gdx.app.log("wallbounds", wallBounds[i].toString());
+        }
+        // wallbounds: (5.04,4.4)
+        // wallbounds: (2.96,4.4)
     }
 
 }

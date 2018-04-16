@@ -18,7 +18,9 @@ public class MainGame extends Game {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 720;
     public static final float PIXELS_PER_METER = 100;
-    public static final String TITLE = "Legend of the Industrial Hygienist";
+    public static final float LEFT_WALL = 320;
+    public static final float RIGHT_WALL = 480;
+    public static final String TITLE = "Wii U";
            
     private SpriteBatch batch;
     Texture img;
