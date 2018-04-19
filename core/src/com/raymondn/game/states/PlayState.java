@@ -2,12 +2,17 @@ package com.raymondn.game.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -24,9 +29,9 @@ import com.raymondn.game.tools.WorldCreator;
  *
  * @author Raymond Naval <raymondnaval@gmail.com>
  */
-public class PlayState implements Screen {
+public class PlayState implements Screen, InputProcessor {
 
-    private PlayerTetrisSprite tetrisPlayer;
+    private PlayerTetrisSprite activeTitrisPiece;
     private Viewport gamePort;
     private MainGame game;
     private OrthographicCamera gameView;
@@ -37,17 +42,14 @@ public class PlayState implements Screen {
     private OrthogonalTiledMapRenderer renderer;
 
     // Box2d variables.
-    private World world;
-    private Box2DDebugRenderer box2DRenderer;
-
-    private TextureAtlas atlas;
-
-    private float horzX, descY;
+//    private World world;
+//    private Box2DDebugRenderer box2DRenderer;
+//    private TextureAtlas atlas;
 
     public PlayState(MainGame game) {
         this.game = game;
 
-        atlas = new TextureAtlas("player_sprite.atlas");
+//        atlas = new TextureAtlas("player_sprite.atlas");
 
         gameView = new OrthographicCamera();
         gamePort = new FitViewport(MainGame.WIDTH / MainGame.PIXELS_PER_METER, MainGame.HEIGHT / MainGame.PIXELS_PER_METER, gameView);
@@ -61,55 +63,34 @@ public class PlayState implements Screen {
         // Center game camera.
         gameView.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
-        world = new World(new Vector2(0, -0.1f), true);
-        box2DRenderer = new Box2DDebugRenderer();
-        box2DRenderer.SHAPE_STATIC.set(1, 0, 0, 1);
+//        world = new World(new Vector2(0, -0.1f), true);
+//        box2DRenderer = new Box2DDebugRenderer();
+//        box2DRenderer.SHAPE_STATIC.set(1, 0, 0, 1);
+//        new WorldCreator(this); 
+        activeTitrisPiece = new PlayerTetrisSprite(this);
 
-        new WorldCreator(this);
-
-        tetrisPlayer = new PlayerTetrisSprite(world, this);
-
+        Gdx.input.setInputProcessor(this);
     }
 
-    public World getWorld() {
-        return world;
-    }
-
+//    public World getWorld() {
+//        return world;
+//    }
+    
     public TiledMap getMap() {
         return map;
     }
 
-    public TextureAtlas getAtlas() {
-        return atlas;
-    }
+//    public TextureAtlas getAtlas() {
+//        return atlas;
+//    }
 
     protected void handleInput(float deltaTime) {
 
-        // DEBUG: press up to keep the Titris block afloat.
-//        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-//            descY += MainGame.TILESIZE;
-//        } else {
-//            descY -= MainGame.TILESIZE/2;
-//        }
-        // Run button.
-//        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-//            user.setMoveSpeed(2.5f);
-//        } else {
-//            user.setMoveSpeed(UserSprite.DEFAULT_SPEED);
-//        }
-//
-        // Increment/decrement left/right by tile width.
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-
-        }
     }
 
     public void update(float dt) {
         handleInput(dt);
-        world.step(1 / 30f, 6, 2);
+//        world.step(1 / 30f, 6, 2);
 
         // Update game camera with correct coordinates after changes.
         gameView.update();
@@ -117,7 +98,12 @@ public class PlayState implements Screen {
         // Only render what's seen in the game world.
         renderer.setView(gameView);
 
-        tetrisPlayer.update(dt);
+        // If titris piece is done descending, create a new titris piece.
+        if (activeTitrisPiece.isDoneDescending()) {
+            activeTitrisPiece = new PlayerTetrisSprite(this);
+        } else {
+            activeTitrisPiece.update(dt);
+        }
     }
 
     @Override
@@ -131,21 +117,44 @@ public class PlayState implements Screen {
         renderer.render();
 
         // Render Box2D debug lines.
-        box2DRenderer.render(world, gameView.combined);
-
+//        box2DRenderer.render(world, gameView.combined);
         game.getBatch().setProjectionMatrix(gameView.combined);
         game.getBatch().begin();
-        game.getBatch().draw(tetrisPlayer.getTitrisPiece(), tetrisPlayer.getX(), tetrisPlayer.getY(), .16f, .16f);
-        game.getBatch().end();
 
+        game.getBatch().draw(activeTitrisPiece.getTitrisPiece(),
+                activeTitrisPiece.getX(), activeTitrisPiece.getY(),
+                activeTitrisPiece.getTitrisWidth(),
+                activeTitrisPiece.getTitrisHeight());
+
+        game.getBatch().end();
     }
 
     @Override
     public void dispose() {
         map.dispose();
         renderer.dispose();
-        world.dispose();
-        box2DRenderer.dispose();
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        if (keycode == Keys.RIGHT) {
+            activeTitrisPiece.setX(true);
+        }
+        if (keycode == Keys.LEFT) {
+            activeTitrisPiece.setX(false);
+        }
+        if (keycode == Keys.DOWN) {
+            activeTitrisPiece.accelerateDescent(true);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        if (keycode == Keys.DOWN) {
+            activeTitrisPiece.accelerateDescent(false);
+        }
+        return true;
     }
 
     @Override
@@ -171,6 +180,36 @@ public class PlayState implements Screen {
     @Override
     public void hide() {
 
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 
 }

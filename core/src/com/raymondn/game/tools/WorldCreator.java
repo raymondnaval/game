@@ -32,7 +32,6 @@ public class WorldCreator {
 
     public WorldCreator(PlayState play) {
         map = play.getMap();
-        world = play.getWorld();
         BodyDef bdef = new BodyDef();
         PolygonShape shape = new PolygonShape();
         FixtureDef fixture = new FixtureDef();
