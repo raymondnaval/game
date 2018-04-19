@@ -1,6 +1,16 @@
 # New Game
 Creating a game using the LibGdx engine. Could be Metroidvania style. Could be Connect 4. Could be both.
 
+4/19/18
+- Created new branch for getting the descending block right.
+- Descending image with fixed speed.
+- Option to increase descent of image.
+- New image generated once previous image touches base of well.
+- Horizontal movement is incremental for accurate alignment of Tetris blocks.
+
+4/3/18
+Created boundaries for Tetris "well".
+
 3/29/18
 Rewriting most of the code again. Created a Tetris "well" and a descending sprite in the center.
 
