@@ -18,7 +18,7 @@ import java.util.Random;
  *
  * @author Raymond Naval <raymondnaval@gmail.com>
  */
-public class PlayerTetrisSprite {
+public class PlayerTitrisSprite {
 
     private TextureRegion activeTitris;
     private float scale = .88f / MainGame.PIXELS_PER_METER;
@@ -33,7 +33,7 @@ public class PlayerTetrisSprite {
     private float[] increments = new float[10];
     private final String TAG = "Class: PlayerTetrisSprite";
 
-    public PlayerTetrisSprite(PlayState state) {
+    public PlayerTitrisSprite(PlayState state) {
 
         // Titris pieces.
         titris = new Texture(Gdx.files.internal("titris_test.png"));
@@ -75,6 +75,10 @@ public class PlayerTetrisSprite {
             position.y -= scale;
             bounds.setPosition(position.x, position.y);
         } else {
+            
+            // Stop the image at the base of the well.
+            position.y = MainGame.WELL_DEPTH - (activeTitris.getRegionHeight() / MainGame.PIXELS_PER_METER);
+            
             doneDescending = true;
         }
     }

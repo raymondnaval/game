@@ -22,8 +22,9 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.raymondn.game.MainGame;
-import com.raymondn.game.sprites.PlayerTetrisSprite;
+import com.raymondn.game.sprites.PlayerTitrisSprite;
 import com.raymondn.game.tools.WorldCreator;
+import java.util.ArrayList;
 
 /**
  *
@@ -31,7 +32,9 @@ import com.raymondn.game.tools.WorldCreator;
  */
 public class PlayState implements Screen, InputProcessor {
 
-    private PlayerTetrisSprite activeTitrisPiece;
+    private final String TAG = "Class: PlayState";
+    private PlayerTitrisSprite activeTitrisPiece;
+    private ArrayList<PlayerTitrisSprite> titrisPieces;
     private Viewport gamePort;
     private MainGame game;
     private OrthographicCamera gameView;
@@ -44,7 +47,7 @@ public class PlayState implements Screen, InputProcessor {
     // Box2d variables.
 //    private World world;
 //    private Box2DDebugRenderer box2DRenderer;
-//    private TextureAtlas atlas;
+    private TextureAtlas atlas;
 
     public PlayState(MainGame game) {
         this.game = game;
@@ -67,7 +70,10 @@ public class PlayState implements Screen, InputProcessor {
 //        box2DRenderer = new Box2DDebugRenderer();
 //        box2DRenderer.SHAPE_STATIC.set(1, 0, 0, 1);
 //        new WorldCreator(this); 
-        activeTitrisPiece = new PlayerTetrisSprite(this);
+        
+        activeTitrisPiece = new PlayerTitrisSprite(this);
+        titrisPieces = new ArrayList<PlayerTitrisSprite>();
+        titrisPieces.add(activeTitrisPiece);
 
         Gdx.input.setInputProcessor(this);
     }
@@ -80,9 +86,9 @@ public class PlayState implements Screen, InputProcessor {
         return map;
     }
 
-//    public TextureAtlas getAtlas() {
-//        return atlas;
-//    }
+    public TextureAtlas getAtlas() {
+        return atlas;
+    }
 
     protected void handleInput(float deltaTime) {
 
@@ -99,11 +105,13 @@ public class PlayState implements Screen, InputProcessor {
         renderer.setView(gameView);
 
         // If titris piece is done descending, create a new titris piece.
-        if (activeTitrisPiece.isDoneDescending()) {
-            activeTitrisPiece = new PlayerTetrisSprite(this);
+        if (titrisPieces.get(titrisPieces.size()-1).isDoneDescending()) {
+//            activeTitrisPiece = new PlayerTitrisSprite(this);
+            titrisPieces.add(new PlayerTitrisSprite(this));
         } else {
-            activeTitrisPiece.update(dt);
+            titrisPieces.get(titrisPieces.size()-1).update(dt);
         }
+        Gdx.app.log(TAG, "titrisPieces.size: " + titrisPieces.size());
     }
 
     @Override
@@ -121,11 +129,13 @@ public class PlayState implements Screen, InputProcessor {
         game.getBatch().setProjectionMatrix(gameView.combined);
         game.getBatch().begin();
 
-        game.getBatch().draw(activeTitrisPiece.getTitrisPiece(),
-                activeTitrisPiece.getX(), activeTitrisPiece.getY(),
-                activeTitrisPiece.getTitrisWidth(),
-                activeTitrisPiece.getTitrisHeight());
-
+        for(int i=0; i<titrisPieces.size(); i++) {
+        game.getBatch().draw(titrisPieces.get(i).getTitrisPiece(),
+                titrisPieces.get(i).getX(), titrisPieces.get(i).getY(),
+                titrisPieces.get(i).getTitrisWidth(),
+                titrisPieces.get(i).getTitrisHeight());
+        }
+        
         game.getBatch().end();
     }
 
@@ -138,13 +148,13 @@ public class PlayState implements Screen, InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Keys.RIGHT) {
-            activeTitrisPiece.setX(true);
+            titrisPieces.get(titrisPieces.size()-1).setX(true);
         }
         if (keycode == Keys.LEFT) {
-            activeTitrisPiece.setX(false);
+            titrisPieces.get(titrisPieces.size()-1).setX(false);
         }
         if (keycode == Keys.DOWN) {
-            activeTitrisPiece.accelerateDescent(true);
+            titrisPieces.get(titrisPieces.size()-1).accelerateDescent(true);
         }
         return true;
     }
@@ -152,7 +162,7 @@ public class PlayState implements Screen, InputProcessor {
     @Override
     public boolean keyUp(int keycode) {
         if (keycode == Keys.DOWN) {
-            activeTitrisPiece.accelerateDescent(false);
+            titrisPieces.get(titrisPieces.size()-1).accelerateDescent(false);
         }
         return true;
     }
