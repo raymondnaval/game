@@ -18,7 +18,7 @@ public class MainGame extends Game {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 720;
     public static final float PIXELS_PER_METER = 100;
-    public static final float PIXEL_SIZE = .16f;
+    public static final float PIXEL_SIZE = 16;
     public static final float LEFT_WALL = 320;
     public static final float RIGHT_WALL = 480;
     public static final float WELL_DEPTH = (HEIGHT - 528) / PIXELS_PER_METER; // 33 tiles * 16 px

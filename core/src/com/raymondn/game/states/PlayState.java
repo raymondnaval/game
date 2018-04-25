@@ -106,12 +106,11 @@ public class PlayState implements Screen, InputProcessor {
 
         // If titris piece is done descending, create a new titris piece.
         if (titrisPieces.get(titrisPieces.size()-1).isDoneDescending()) {
-//            activeTitrisPiece = new PlayerTitrisSprite(this);
             titrisPieces.add(new PlayerTitrisSprite(this));
         } else {
             titrisPieces.get(titrisPieces.size()-1).update(dt);
         }
-        Gdx.app.log(TAG, "titrisPieces.size: " + titrisPieces.size());
+//        Gdx.app.log(TAG, "titrisPieces.size: " + titrisPieces.size());
     }
 
     @Override
@@ -132,8 +131,13 @@ public class PlayState implements Screen, InputProcessor {
         for(int i=0; i<titrisPieces.size(); i++) {
         game.getBatch().draw(titrisPieces.get(i).getTitrisPiece(),
                 titrisPieces.get(i).getX(), titrisPieces.get(i).getY(),
+                titrisPieces.get(i).getOriginX(),
+                titrisPieces.get(i).getOriginY(),
                 titrisPieces.get(i).getTitrisWidth(),
-                titrisPieces.get(i).getTitrisHeight());
+                titrisPieces.get(i).getTitrisHeight(), 
+                titrisPieces.get(i).getScaleX(),
+                titrisPieces.get(i).getScaleY(), 
+                titrisPieces.get(i).getRotation());
         }
         
         game.getBatch().end();
@@ -156,6 +160,9 @@ public class PlayState implements Screen, InputProcessor {
         if (keycode == Keys.DOWN) {
             titrisPieces.get(titrisPieces.size()-1).accelerateDescent(true);
         }
+        if (keycode == Keys.UP) {
+            titrisPieces.get(titrisPieces.size()-1).rotate();
+        }   
         return true;
     }
 
