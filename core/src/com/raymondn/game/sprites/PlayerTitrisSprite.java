@@ -17,12 +17,11 @@ import java.util.Random;
 public class PlayerTitrisSprite {
 
     private Sprite activeTitris;
-    private float scale = .88f / MainGame.PIXELS_PER_METER;
-//    private float titrisWidth = 16 / MainGame.PIXELS_PER_METER, titrisHeight = 16 / MainGame.PIXELS_PER_METER;
+    private float scale = MainGame.DEFAULT_DESCENT_SPEED / 4;
     private Sprite[] titrisPieces;
     private boolean doneDescending = false;
     private Rectangle bounds;
-    private Texture titris;
+    private Texture titris, titris2;
     private Vector2 position;
     private int currentIncrement = 0;
     private float[] increments = new float[10];
@@ -31,13 +30,15 @@ public class PlayerTitrisSprite {
     public PlayerTitrisSprite(PlayState state) {
 
         // Titris pieces.
+        titris2 = new Texture(Gdx.files.internal("sprite_sheet.png"));
         titris = new Texture(Gdx.files.internal("titris_test.png"));
         titrisPieces = new Sprite[]{
             new Sprite(titris, 0, 0, 16, 16),
             new Sprite(titris, 16, 0, 16, 16),
             new Sprite(titris, 32, 0, 16, 16),
             new Sprite(titris, 16, 0, 32, 16),
-            new Sprite(titris, 0, 0, 32, 16)
+            new Sprite(titris, 0, 0, 32, 16),
+            new Sprite(titris2, 0, 64, 48, 16)
         };
 
         activeTitris = generateTitrisPiece();
@@ -46,7 +47,9 @@ public class PlayerTitrisSprite {
 
         position = new Vector2(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, (MainGame.HEIGHT - titris.getHeight()) / MainGame.PIXELS_PER_METER);
 
-        bounds = new Rectangle(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, (MainGame.HEIGHT - titris.getHeight()) / MainGame.PIXELS_PER_METER, activeTitris.getRegionWidth(), activeTitris.getRegionHeight());
+        bounds = new Rectangle((MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER, 
+                (activeTitris.getHeight() / 2) / MainGame.PIXELS_PER_METER, 
+                activeTitris.getRegionWidth(), activeTitris.getRegionHeight());
 
         Gdx.app.log(TAG, "titris width: " + titris.getWidth());
 
@@ -65,11 +68,6 @@ public class PlayerTitrisSprite {
 
     private Sprite generateTitrisPiece() {
         int rand = new Random().nextInt(titrisPieces.length);
-
-        // If it's the elongated piece, change the width dimensions.
-        if (rand == 3) {
-//            titrisWidth = 32 / MainGame.PIXELS_PER_METER;
-        }
 
         return titrisPieces[rand];
     }
@@ -110,8 +108,8 @@ public class PlayerTitrisSprite {
         }
         Gdx.app.log(TAG, "getrotation: " + activeTitris.getRotation()
                 + " getoriginx: " + activeTitris.getOriginX() + " getoriginY: "
-                + activeTitris.getOriginY() + " width: " + activeTitris.getWidth()
-                + " height: " + activeTitris.getHeight());
+                + activeTitris.getOriginY() + " regionwidth: " + activeTitris.getRegionWidth()
+                + " regionheight: " + activeTitris.getRegionHeight());
     }
 
     public void setX(boolean movingRight) {
@@ -124,6 +122,10 @@ public class PlayerTitrisSprite {
                     position.x = increments[currentIncrement];
                 }
                 if (currentIncrement < 8 && activeTitris.getWidth() == MainGame.PIXEL_SIZE * 2) {
+                    currentIncrement++;
+                    position.x = increments[currentIncrement];
+                }
+                if (currentIncrement < 7 && activeTitris.getWidth() == MainGame.PIXEL_SIZE * 3) {
                     currentIncrement++;
                     position.x = increments[currentIncrement];
                 }
@@ -140,13 +142,13 @@ public class PlayerTitrisSprite {
             Gdx.app.log("increment", "" + currentIncrement);
         }
     }
-    
+
     public void accelerateDescent(boolean faster) {
         if (!doneDescending) {
             if (faster) {
-                scale = 4.8f / MainGame.PIXELS_PER_METER;
+                scale = MainGame.DEFAULT_DESCENT_SPEED * 5;
             } else {
-                scale = 0.88f / MainGame.PIXELS_PER_METER;
+                scale = MainGame.DEFAULT_DESCENT_SPEED / 4;
             }
         }
     }
@@ -178,8 +180,8 @@ public class PlayerTitrisSprite {
     public TextureRegion getTitrisPiece() {
         return activeTitris;
     }
-    
-       public Sprite getSprite() {
+
+    public Sprite getSprite() {
         return activeTitris;
     }
 

@@ -32,6 +32,7 @@ public class WorldCreator {
 
     public WorldCreator(PlayState play) {
         map = play.getMap();
+        world = play.getWorld();
         BodyDef bdef = new BodyDef();
         PolygonShape shape = new PolygonShape();
         FixtureDef fixture = new FixtureDef();
@@ -75,9 +76,6 @@ public class WorldCreator {
             i++;
         }
         
-        for(i=0; i<wallBounds.length; i++) {
-            Gdx.app.log("wallbounds", wallBounds[i].toString());
-        }
         // wallbounds: (5.04,4.4)
         // wallbounds: (2.96,4.4)
     }

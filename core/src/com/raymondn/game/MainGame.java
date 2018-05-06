@@ -23,6 +23,7 @@ public class MainGame extends Game {
     public static final float RIGHT_WALL = 480;
     public static final float WELL_DEPTH = (HEIGHT - 528) / PIXELS_PER_METER; // 33 tiles * 16 px
     public static final String TITLE = "Wii U";
+    public static final float DEFAULT_DESCENT_SPEED = .88f / PIXELS_PER_METER;
            
     private SpriteBatch batch;
     Texture img;
