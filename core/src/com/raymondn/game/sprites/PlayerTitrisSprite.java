@@ -6,6 +6,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.raymondn.game.MainGame;
 import com.raymondn.game.states.PlayState;
 import java.util.Random;
@@ -26,8 +30,17 @@ public class PlayerTitrisSprite {
     private int currentIncrement = 0;
     private float[] increments = new float[10];
     private final String TAG = "Class -- PlayerTetrisSprite";
+    private BodyDef bdef = new BodyDef();
+    private Body body;
+    private Rectangle rect;
+    private PolygonShape shape;
+    private FixtureDef fixture = new FixtureDef();
+    private PlayState ps;
 
     public PlayerTitrisSprite(PlayState state) {
+
+        ps = state;
+        shape = new PolygonShape();
 
         // Titris pieces.
         titris2 = new Texture(Gdx.files.internal("sprite_sheet.png"));
@@ -45,15 +58,20 @@ public class PlayerTitrisSprite {
         activeTitris.setOrigin((MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER, (activeTitris.getHeight() / 2) / MainGame.PIXELS_PER_METER);
         activeTitris.setBounds(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, (MainGame.HEIGHT - titris.getHeight()) / MainGame.PIXELS_PER_METER, activeTitris.getRegionWidth(), activeTitris.getRegionHeight());
 
+        // Starting position of titris piece.
         position = new Vector2(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, (MainGame.HEIGHT - titris.getHeight()) / MainGame.PIXELS_PER_METER);
+        /* DEBUG */
+        //position = new Vector2((MainGame.WIDTH/MainGame.PIXELS_PER_METER)/2, (MainGame.HEIGHT/ MainGame.PIXELS_PER_METER)/2);
 
-        bounds = new Rectangle((MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER, 
-                (activeTitris.getHeight() / 2) / MainGame.PIXELS_PER_METER, 
+        bounds = new Rectangle((MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER,
+                (activeTitris.getHeight() / 2) / MainGame.PIXELS_PER_METER,
                 activeTitris.getRegionWidth(), activeTitris.getRegionHeight());
 
         Gdx.app.log(TAG, "titris width: " + titris.getWidth());
 
-        // Horizontal increments in well.
+        shapeBounds();
+
+        // Horizontal increments in well. MOVE TO PlayState class.
         increments[0] = MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER;
         increments[1] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10))) / MainGame.PIXELS_PER_METER;
         increments[2] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10 * 2))) / MainGame.PIXELS_PER_METER;
@@ -72,18 +90,61 @@ public class PlayerTitrisSprite {
         return titrisPieces[rand];
     }
 
+    private void shapeBounds() {
+
+        // Create a rectangle object because the the objects in the loop are all rectangles.
+        rect = new Rectangle(
+                position.x, position.y,
+                activeTitris.getWidth() / MainGame.PIXELS_PER_METER,
+                activeTitris.getHeight() / MainGame.PIXELS_PER_METER);
+
+        bdef.type = BodyDef.BodyType.KinematicBody;
+
+        // Position the rectangle exactly where its drawn on the Tile map.
+        bdef.position.set((rect.getX() + rect.getWidth() / 2), (rect.getY() + rect.getHeight() / 2));
+
+        // @TODO Add comments to these below...
+        body = ps.getWorld().createBody(bdef);
+        shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
+        fixture.shape = shape;
+        body.createFixture(fixture);
+    }
+
     public void update(float dt) {
 
         // If not descending, generate new piece.
         if (position.y > MainGame.WELL_DEPTH - (activeTitris.getRegionHeight() / MainGame.PIXELS_PER_METER)) {
             position.y -= scale;
+
+            Vector2 newCoords = new Vector2(
+                    position.x + (getTitrisWidth() / 2),
+                    position.y + (getTitrisHeight() / 2));
+
+            // Change titris physics boundaries when rotated.
+            if (activeTitris.getRotation() == 90.0f) {
+                newCoords.x = position.x + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2);
+                newCoords.y = position.y + getTitrisWidth() / 2;
+            }
+            if (activeTitris.getRotation() == 180.0f) {
+                newCoords.x = position.x - getTitrisWidth() / 2 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
+//                newCoords.y = activePiece.getY() + activePiece.getTitrisWidth() / 2;
+            }
+            if (activeTitris.getRotation() == 270.0f) {
+                newCoords.x = position.x + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2);
+                newCoords.y = position.y - getTitrisWidth() / 2 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
+            }
+
+            double degToRads = Math.toRadians(activeTitris.getRotation());
+
+            body.setTransform(newCoords, (float) degToRads);
             bounds.setPosition(position.x, position.y);
+
         } else {
 
             // Stop the image at the base of the well.
             position.y = MainGame.WELL_DEPTH - (activeTitris.getRegionHeight() / MainGame.PIXELS_PER_METER);
-
             doneDescending = true;
+            shapeBounds();
         }
 //        Gdx.app.log(TAG, "bounds.y: " + bounds.y);
     }
@@ -106,6 +167,7 @@ public class PlayerTitrisSprite {
         if (activeTitris.getRotation() == 360.0) {
             activeTitris.setRotation(0f);
         }
+
         Gdx.app.log(TAG, "getrotation: " + activeTitris.getRotation()
                 + " getoriginx: " + activeTitris.getOriginX() + " getoriginY: "
                 + activeTitris.getOriginY() + " regionwidth: " + activeTitris.getRegionWidth()

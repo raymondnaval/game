@@ -25,7 +25,6 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.raymondn.game.MainGame;
@@ -86,7 +85,7 @@ public class PlayState implements Screen, InputProcessor {
         activeTitrisPiece = new PlayerTitrisSprite(this);
         titrisPieces = new ArrayList<PlayerTitrisSprite>();
         titrisPieces.add(activeTitrisPiece);
-        shapeBounds();
+//        shapeBounds();
 
         Gdx.input.setInputProcessor(this);
     }
@@ -110,6 +109,7 @@ public class PlayState implements Screen, InputProcessor {
     public void update(float dt) {
         handleInput(dt);
         world.step(1 / 30f, 6, 2);
+        PlayerTitrisSprite activePiece = titrisPieces.get(titrisPieces.size() - 1);
 
         // Update game camera with correct coordinates after changes.
         gameView.update();
@@ -120,46 +120,33 @@ public class PlayState implements Screen, InputProcessor {
         // If titris piece is done descending, create a new titris piece.
         if (titrisPieces.get(titrisPieces.size() - 1).isDoneDescending()) {
             titrisPieces.add(new PlayerTitrisSprite(this));
-            shapeBounds();
+//            shapeBounds();
         } else {
-            titrisPieces.get(titrisPieces.size() - 1).update(dt);
+            activePiece.update(dt);
 
-            // Set anchor of piece for rotation.
-            Body rotationAnchor = boxAnchor(titrisPieces.get(titrisPieces.size() - 1).getX(), titrisPieces.get(titrisPieces.size() - 1).getY(),titrisPieces.get(titrisPieces.size() - 1).getTitrisWidth(),titrisPieces.get(titrisPieces.size() - 1).getTitrisHeight());
-            Vector2 newCoords = new Vector2(titrisPieces.get(titrisPieces.size() - 1).getX() + (titrisPieces.get(titrisPieces.size() - 1).getTitrisWidth()/2),
-                    titrisPieces.get(titrisPieces.size() - 1).getY()  + (titrisPieces.get(titrisPieces.size() - 1).getTitrisHeight()/2));
-            double degToRads = Math.toRadians(titrisPieces.get(titrisPieces.size() - 1).getRotation());
-            
-            RevoluteJointDef rDef = new RevoluteJointDef();
-            rDef.bodyA = rotationAnchor;
-            rDef.bodyB = body;
-            world.createJoint(rDef);
-            
+//            Vector2 newCoords = new Vector2(
+//                    titrisPieces.get(titrisPieces.size() - 1).getX() + (titrisPieces.get(titrisPieces.size() - 1).getTitrisWidth() / 2),
+//                    titrisPieces.get(titrisPieces.size() - 1).getY() + (titrisPieces.get(titrisPieces.size() - 1).getTitrisHeight() / 2));
+//            
+//            // Change titris physics boundaries when rotated.
+//            if(activePiece.getRotation()==90.0f) {
+//                newCoords.x = activePiece.getX() + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER)/2);
+//                newCoords.y = activePiece.getY() + activePiece.getTitrisWidth() / 2;
+//            }
+//            if(activePiece.getRotation()==180.0f) {
+//                newCoords.x = activePiece.getX() - activePiece.getTitrisWidth()/2 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
+////                newCoords.y = activePiece.getY() + activePiece.getTitrisWidth() / 2;
+//            }
+//            if(activePiece.getRotation()==270.0f) {
+//                newCoords.x = activePiece.getX() + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER)/2);
+//                newCoords.y = activePiece.getY() - activePiece.getTitrisWidth() / 2 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
+//            }
+//            
+//            double degToRads = Math.toRadians(titrisPieces.get(titrisPieces.size() - 1).getRotation());
+//            
 //            body.setTransform(newCoords, (float) degToRads);
-            
-            
-            
         }
-        Gdx.app.log(TAG, "titrisPieces.getrotation: " + titrisPieces.get(titrisPieces.size() - 1).getRotation() + " radians: " + Math.toRadians(titrisPieces.get(titrisPieces.size() - 1).getRotation()));
-    }
-    
-    private Body boxAnchor(float x, float y, float width, float height) {
-        Body mBody;
-        BodyDef mBDef = new BodyDef();
-        FixtureDef mFDef = new FixtureDef();
-        mBDef.type = BodyDef.BodyType.KinematicBody;
-        
-        mBDef.position.set(x, y);
-        mBDef.fixedRotation = true;
-        mBody = world.createBody(mBDef);
-        
-        PolygonShape pShape = new PolygonShape();
-        pShape.setAsBox(width/2, height/2);
-        mFDef.shape = pShape;
-        mBody.createFixture(mFDef);
-        pShape.dispose();
-        
-        return mBody;
+//        Gdx.app.log(TAG, "titrisPieces.getrotation: " + titrisPieces.get(titrisPieces.size() - 1).getRotation() + " radians: " + Math.toRadians(titrisPieces.get(titrisPieces.size() - 1).getRotation()));
     }
 
     @Override
@@ -194,8 +181,6 @@ public class PlayState implements Screen, InputProcessor {
 
     private void shapeBounds() {
 
-        
-
         // Create a rectangle object because the the objects in the loop are all rectangles.
         rect = new Rectangle(
                 titrisPieces.get(titrisPieces.size() - 1).getX(), titrisPieces.get(titrisPieces.size() - 1).getY(),
@@ -208,7 +193,7 @@ public class PlayState implements Screen, InputProcessor {
 
         // Position the rectangle exactly where its drawn on the Tile map.
         bdef.position.set((rect.getX() + rect.getWidth() / 2), (rect.getY() + rect.getHeight() / 2));
-        
+
         // @TODO Add comments to these below...
         body = world.createBody(bdef);
         shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
@@ -235,6 +220,7 @@ public class PlayState implements Screen, InputProcessor {
         }
         if (keycode == Keys.UP) {
             titrisPieces.get(titrisPieces.size() - 1).rotate();
+            
         }
         return true;
     }
