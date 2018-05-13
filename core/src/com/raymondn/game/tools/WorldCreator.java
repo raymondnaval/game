@@ -54,7 +54,8 @@ public class WorldCreator {
             body = world.createBody(bdef);
             shape.setAsBox(rect.getWidth() / 2 / MainGame.PIXELS_PER_METER, rect.getHeight() / 2 / MainGame.PIXELS_PER_METER);
             fixture.shape = shape;
-            body.createFixture(fixture);
+            fixture.filter.categoryBits = MainGame.BOTTOM_WELL_BIT;
+            body.createFixture(fixture).setUserData("bottom_well");
 
         }
 
@@ -70,7 +71,8 @@ public class WorldCreator {
             body = world.createBody(bdef);
             shape.setAsBox(rect.getWidth() / 2 / MainGame.PIXELS_PER_METER, rect.getHeight() / 2 / MainGame.PIXELS_PER_METER);
             fixture.shape = shape;
-            body.createFixture(fixture);
+            fixture.filter.categoryBits = MainGame.SIDE_WELL_BIT;
+            body.createFixture(fixture).setUserData("side_well");
 
             wallBounds[i] = new Vector2(bdef.position.x, bdef.position.y);
             i++;

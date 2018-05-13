@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.raymondn.game.MainGame;
@@ -34,7 +35,7 @@ public class PlayerTitrisSprite {
     private Body body;
     private Rectangle rect;
     private PolygonShape shape;
-    private FixtureDef fixture = new FixtureDef();
+    private FixtureDef fixture;
     private PlayState ps;
 
     public PlayerTitrisSprite(PlayState state) {
@@ -47,16 +48,11 @@ public class PlayerTitrisSprite {
         titris = new Texture(Gdx.files.internal("titris_test.png"));
         titrisPieces = new Sprite[]{
             new Sprite(titris, 0, 0, 16, 16),
-            new Sprite(titris, 16, 0, 16, 16),
-            new Sprite(titris, 32, 0, 16, 16),
-            new Sprite(titris, 16, 0, 32, 16),
             new Sprite(titris, 0, 0, 32, 16),
             new Sprite(titris2, 0, 64, 48, 16)
         };
 
         activeTitris = generateTitrisPiece();
-        activeTitris.setOrigin((MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER, (activeTitris.getHeight() / 2) / MainGame.PIXELS_PER_METER);
-        activeTitris.setBounds(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, (MainGame.HEIGHT - titris.getHeight()) / MainGame.PIXELS_PER_METER, activeTitris.getRegionWidth(), activeTitris.getRegionHeight());
 
         // Starting position of titris piece.
         position = new Vector2(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, (MainGame.HEIGHT - titris.getHeight()) / MainGame.PIXELS_PER_METER);
@@ -69,7 +65,7 @@ public class PlayerTitrisSprite {
 
         Gdx.app.log(TAG, "titris width: " + titris.getWidth());
 
-        shapeBounds();
+        defineTitris();
 
         // Horizontal increments in well. MOVE TO PlayState class.
         increments[0] = MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER;
@@ -90,7 +86,18 @@ public class PlayerTitrisSprite {
         return titrisPieces[rand];
     }
 
-    private void shapeBounds() {
+    private void defineTitris() {
+        activeTitris.setOrigin((MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER,
+                (activeTitris.getHeight() / 2) / MainGame.PIXELS_PER_METER);
+        activeTitris.setBounds(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, (MainGame.HEIGHT - titris.getHeight()) / MainGame.PIXELS_PER_METER, activeTitris.getRegionWidth(), activeTitris.getRegionHeight());
+        fixture = new FixtureDef();
+
+        // Define physics bit.
+        fixture.filter.categoryBits = MainGame.TITRIS_BIT;
+
+        // Collision with side walls and bottom well and other titris pieces.
+        fixture.filter.maskBits = MainGame.SIDE_WELL_BIT
+                | MainGame.BOTTOM_WELL_BIT | MainGame.TITRIS_BIT;
 
         // Create a rectangle object because the the objects in the loop are all rectangles.
         rect = new Rectangle(
@@ -98,7 +105,7 @@ public class PlayerTitrisSprite {
                 activeTitris.getWidth() / MainGame.PIXELS_PER_METER,
                 activeTitris.getHeight() / MainGame.PIXELS_PER_METER);
 
-        bdef.type = BodyDef.BodyType.KinematicBody;
+        bdef.type = BodyDef.BodyType.DynamicBody;
 
         // Position the rectangle exactly where its drawn on the Tile map.
         bdef.position.set((rect.getX() + rect.getWidth() / 2), (rect.getY() + rect.getHeight() / 2));
@@ -107,18 +114,28 @@ public class PlayerTitrisSprite {
         body = ps.getWorld().createBody(bdef);
         shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
         fixture.shape = shape;
-        body.createFixture(fixture);
+
+        body.createFixture(fixture).setUserData("titris");
+
+        EdgeShape side = new EdgeShape();
+        side.set(new Vector2(-2 / MainGame.PIXELS_PER_METER, 6 / MainGame.PIXELS_PER_METER),
+                new Vector2(2 / MainGame.PIXELS_PER_METER, 6 / MainGame.PIXELS_PER_METER));
+        fixture.isSensor = true;
+//        body.createFixture(fixture).setUserData(this);
     }
 
     public void update(float dt) {
 
-        // If not descending, generate new piece.
-        if (position.y > MainGame.WELL_DEPTH - (activeTitris.getRegionHeight() / MainGame.PIXELS_PER_METER)) {
-            position.y -= scale;
+        double degToRads = Math.toRadians(activeTitris.getRotation());
+        Vector2 newCoords = new Vector2(
+                position.x + (getTitrisWidth() / 2),
+                position.y + (getTitrisHeight() / 2));
 
-            Vector2 newCoords = new Vector2(
-                    position.x + (getTitrisWidth() / 2),
-                    position.y + (getTitrisHeight() / 2));
+        // If not descending, generate new piece.
+//        if (position.y > MainGame.WELL_DEPTH - (activeTitris.getRegionHeight() / MainGame.PIXELS_PER_METER)) {
+        if (!ps.madeContact()) {
+
+            position.y -= scale;
 
             // Change titris physics boundaries when rotated.
             if (activeTitris.getRotation() == 90.0f) {
@@ -133,20 +150,19 @@ public class PlayerTitrisSprite {
                 newCoords.x = position.x + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2);
                 newCoords.y = position.y - getTitrisWidth() / 2 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
             }
-
-            double degToRads = Math.toRadians(activeTitris.getRotation());
-
-            body.setTransform(newCoords, (float) degToRads);
             bounds.setPosition(position.x, position.y);
+            body.setTransform(newCoords, (float) degToRads);
 
         } else {
 
             // Stop the image at the base of the well.
             position.y = MainGame.WELL_DEPTH - (activeTitris.getRegionHeight() / MainGame.PIXELS_PER_METER);
+
+//            Gdx.app.log(TAG, "getTransform: " + body.getTransform().getPosition().toString());
+            body.setTransform(newCoords, (float) degToRads);
             doneDescending = true;
-            shapeBounds();
         }
-//        Gdx.app.log(TAG, "bounds.y: " + bounds.y);
+
     }
 
     public void rotate() {
@@ -171,7 +187,7 @@ public class PlayerTitrisSprite {
         Gdx.app.log(TAG, "getrotation: " + activeTitris.getRotation()
                 + " getoriginx: " + activeTitris.getOriginX() + " getoriginY: "
                 + activeTitris.getOriginY() + " regionwidth: " + activeTitris.getRegionWidth()
-                + " regionheight: " + activeTitris.getRegionHeight());
+                + " regionheight: " + activeTitris.getRegionHeight() + " getscalex: " + activeTitris.getScaleX());
     }
 
     public void setX(boolean movingRight) {

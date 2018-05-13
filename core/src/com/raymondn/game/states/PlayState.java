@@ -22,13 +22,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.raymondn.game.MainGame;
 import com.raymondn.game.sprites.PlayerTitrisSprite;
+import com.raymondn.game.tools.ObjectContactListener;
 import com.raymondn.game.tools.WorldCreator;
 import java.util.ArrayList;
 
@@ -59,6 +64,8 @@ public class PlayState implements Screen, InputProcessor {
     private Rectangle rect;
     private PolygonShape shape;
     private FixtureDef fixture = new FixtureDef();
+    
+    private ObjectContactListener ocl;
 
     public PlayState(MainGame game) {
         this.game = game;
@@ -85,9 +92,15 @@ public class PlayState implements Screen, InputProcessor {
         activeTitrisPiece = new PlayerTitrisSprite(this);
         titrisPieces = new ArrayList<PlayerTitrisSprite>();
         titrisPieces.add(activeTitrisPiece);
-//        shapeBounds();
 
         Gdx.input.setInputProcessor(this);
+        
+        ocl = new ObjectContactListener();
+        world.setContactListener(ocl);
+    }
+    
+    public boolean madeContact() {
+        return ocl.stopDescent();
     }
 
     public World getWorld() {
@@ -120,33 +133,9 @@ public class PlayState implements Screen, InputProcessor {
         // If titris piece is done descending, create a new titris piece.
         if (titrisPieces.get(titrisPieces.size() - 1).isDoneDescending()) {
             titrisPieces.add(new PlayerTitrisSprite(this));
-//            shapeBounds();
         } else {
             activePiece.update(dt);
-
-//            Vector2 newCoords = new Vector2(
-//                    titrisPieces.get(titrisPieces.size() - 1).getX() + (titrisPieces.get(titrisPieces.size() - 1).getTitrisWidth() / 2),
-//                    titrisPieces.get(titrisPieces.size() - 1).getY() + (titrisPieces.get(titrisPieces.size() - 1).getTitrisHeight() / 2));
-//            
-//            // Change titris physics boundaries when rotated.
-//            if(activePiece.getRotation()==90.0f) {
-//                newCoords.x = activePiece.getX() + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER)/2);
-//                newCoords.y = activePiece.getY() + activePiece.getTitrisWidth() / 2;
-//            }
-//            if(activePiece.getRotation()==180.0f) {
-//                newCoords.x = activePiece.getX() - activePiece.getTitrisWidth()/2 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
-////                newCoords.y = activePiece.getY() + activePiece.getTitrisWidth() / 2;
-//            }
-//            if(activePiece.getRotation()==270.0f) {
-//                newCoords.x = activePiece.getX() + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER)/2);
-//                newCoords.y = activePiece.getY() - activePiece.getTitrisWidth() / 2 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
-//            }
-//            
-//            double degToRads = Math.toRadians(titrisPieces.get(titrisPieces.size() - 1).getRotation());
-//            
-//            body.setTransform(newCoords, (float) degToRads);
         }
-//        Gdx.app.log(TAG, "titrisPieces.getrotation: " + titrisPieces.get(titrisPieces.size() - 1).getRotation() + " radians: " + Math.toRadians(titrisPieces.get(titrisPieces.size() - 1).getRotation()));
     }
 
     @Override
@@ -179,28 +168,6 @@ public class PlayState implements Screen, InputProcessor {
         game.getBatch().end();
     }
 
-    private void shapeBounds() {
-
-        // Create a rectangle object because the the objects in the loop are all rectangles.
-        rect = new Rectangle(
-                titrisPieces.get(titrisPieces.size() - 1).getX(), titrisPieces.get(titrisPieces.size() - 1).getY(),
-                titrisPieces.get(titrisPieces.size() - 1).getTitrisWidth(),
-                titrisPieces.get(titrisPieces.size() - 1).getTitrisHeight());
-
-        Gdx.app.log(TAG, "getx: " + titrisPieces.get(titrisPieces.size() - 1).getX() + " width: " + titrisPieces.get(titrisPieces.size() - 1).getTitrisWidth());
-
-        bdef.type = BodyDef.BodyType.KinematicBody;
-
-        // Position the rectangle exactly where its drawn on the Tile map.
-        bdef.position.set((rect.getX() + rect.getWidth() / 2), (rect.getY() + rect.getHeight() / 2));
-
-        // @TODO Add comments to these below...
-        body = world.createBody(bdef);
-        shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-        fixture.shape = shape;
-        body.createFixture(fixture);
-    }
-
     @Override
     public void dispose() {
         map.dispose();
@@ -220,7 +187,7 @@ public class PlayState implements Screen, InputProcessor {
         }
         if (keycode == Keys.UP) {
             titrisPieces.get(titrisPieces.size() - 1).rotate();
-            
+
         }
         return true;
     }
