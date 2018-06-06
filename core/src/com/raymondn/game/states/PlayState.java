@@ -64,7 +64,7 @@ public class PlayState implements Screen, InputProcessor {
     private Rectangle rect;
     private PolygonShape shape;
     private FixtureDef fixture = new FixtureDef();
-    
+
     private ObjectContactListener ocl;
 
     public PlayState(MainGame game) {
@@ -94,13 +94,9 @@ public class PlayState implements Screen, InputProcessor {
         titrisPieces.add(activeTitrisPiece);
 
         Gdx.input.setInputProcessor(this);
-        
-        ocl = new ObjectContactListener();
+
+        ocl = new ObjectContactListener(activeTitrisPiece);
         world.setContactListener(ocl);
-    }
-    
-    public boolean madeContact() {
-        return ocl.stopDescent();
     }
 
     public World getWorld() {
@@ -121,8 +117,7 @@ public class PlayState implements Screen, InputProcessor {
 
     public void update(float dt) {
         handleInput(dt);
-        world.step(1 / 30f, 6, 2);
-        PlayerTitrisSprite activePiece = titrisPieces.get(titrisPieces.size() - 1);
+        world.step(1 / 60f, 6, 2);
 
         // Update game camera with correct coordinates after changes.
         gameView.update();
@@ -132,9 +127,22 @@ public class PlayState implements Screen, InputProcessor {
 
         // If titris piece is done descending, create a new titris piece.
         if (titrisPieces.get(titrisPieces.size() - 1).isDoneDescending()) {
-            titrisPieces.add(new PlayerTitrisSprite(this));
+            try {
+                Thread.sleep(500);
+            } catch (Exception ex) {
+                Gdx.app.log(TAG, ex.toString());
+            }
+            activeTitrisPiece = new PlayerTitrisSprite(this);
+            titrisPieces.add(activeTitrisPiece);
+            ocl = new ObjectContactListener(activeTitrisPiece);
+            world.setContactListener(ocl);
+            titrisPieces.get(0).debugGetPosition(0);
+            for (int i = 0; i < titrisPieces.size(); i++) {
+                Gdx.app.log(TAG, i + ": " + titrisPieces.get(i).getBit());
+            }
+
         } else {
-            activePiece.update(dt);
+            titrisPieces.get(titrisPieces.size() - 1).update(dt);
         }
     }
 
@@ -154,8 +162,22 @@ public class PlayState implements Screen, InputProcessor {
         game.getBatch().begin();
 
         for (int i = 0; i < titrisPieces.size(); i++) {
-            game.getBatch().draw(titrisPieces.get(i).getTitrisPiece(),
-                    titrisPieces.get(i).getX(), titrisPieces.get(i).getY(),
+//            Gdx.app.log(TAG, "\ngetx: " + titrisPieces.get(i).getX() + 
+//                    " getY: " + titrisPieces.get(i).getY()+ 
+//                    " getoriginx: " + titrisPieces.get(i).getOriginX()+ 
+//                    " getoriginY: " + titrisPieces.get(i).getOriginY()+ 
+//                    " \ngettitriswidth: " + titrisPieces.get(i).getTitrisWidth()+ 
+//                    " gettitrisheight: " + titrisPieces.get(i).getTitrisHeight()+ 
+//                    " getscalex: " + titrisPieces.get(i).getScaleX()+ 
+//                    " getscaleY: " + titrisPieces.get(i).getScaleY()+ 
+//                    " getrotation: " + titrisPieces.get(i).getRotation());
+            
+for(int j=0; j<titrisPieces.get(i).getTitrisPiece().length; j++) {
+    
+
+            game.getBatch().draw(titrisPieces.get(i).getTitrisPiece()[j],
+                    titrisPieces.get(i).getXY()[j].x, 
+                    titrisPieces.get(i).getXY()[j].y,
                     titrisPieces.get(i).getOriginX(),
                     titrisPieces.get(i).getOriginY(),
                     titrisPieces.get(i).getTitrisWidth(),
@@ -164,7 +186,7 @@ public class PlayState implements Screen, InputProcessor {
                     titrisPieces.get(i).getScaleY(),
                     titrisPieces.get(i).getRotation());
         }
-
+}
         game.getBatch().end();
     }
 
@@ -176,18 +198,30 @@ public class PlayState implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Keys.RIGHT) {
-            titrisPieces.get(titrisPieces.size() - 1).setX(true);
-        }
-        if (keycode == Keys.LEFT) {
-            titrisPieces.get(titrisPieces.size() - 1).setX(false);
-        }
-        if (keycode == Keys.DOWN) {
-            titrisPieces.get(titrisPieces.size() - 1).accelerateDescent(true);
-        }
-        if (keycode == Keys.UP) {
-            titrisPieces.get(titrisPieces.size() - 1).rotate();
 
+        // If not paused, enable controls.
+        if (!titrisPieces.get(titrisPieces.size() - 1).isPaused()) {
+            if (keycode == Keys.RIGHT) {
+                titrisPieces.get(titrisPieces.size() - 1).setX(true);
+            }
+            if (keycode == Keys.LEFT) {
+                titrisPieces.get(titrisPieces.size() - 1).setX(false);
+            }
+            if (keycode == Keys.DOWN) {
+                titrisPieces.get(titrisPieces.size() - 1).accelerateDescent(true);
+            }
+            if (keycode == Keys.UP) {
+                titrisPieces.get(titrisPieces.size() - 1).rotate();
+            }
+        }
+
+        // Toggle pause.
+        if (keycode == Keys.SPACE) {
+            if (titrisPieces.get(titrisPieces.size() - 1).isPaused()) {
+                titrisPieces.get(titrisPieces.size() - 1).pause(false);
+            } else {
+                titrisPieces.get(titrisPieces.size() - 1).pause(true);
+            }
         }
         return true;
     }

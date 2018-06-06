@@ -9,8 +9,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.raymondn.game.MainGame;
+import com.raymondn.game.sprites.PlayerTitrisSprite;
 
 /**
  *
@@ -19,10 +22,10 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 public class ObjectContactListener implements ContactListener {
 
     private final String TAG = "Class: ObjectContactListener";
-    private boolean stop = false;
-    
-    public boolean stopDescent() {
-        return stop;
+    PlayerTitrisSprite pts;
+
+    public ObjectContactListener(PlayerTitrisSprite pts) {
+        this.pts = pts;
     }
 
     @Override
@@ -30,22 +33,38 @@ public class ObjectContactListener implements ContactListener {
         Fixture fixA = contact.getFixtureA();
         Fixture fixB = contact.getFixtureB();
 
-        
         if (fixA.getUserData() == "bottom_well" && fixB.getUserData() == "titris") {
-            stop = true;
+            pts.changeToStopped();
+
         }
-        
+
         if (fixA.getUserData() == "titris" && fixB.getUserData() == "titris") {
-            Fixture activeTitris = fixB;
-            Fixture stoppedTitris = fixA;
-            stop = true;
             Gdx.app.log(TAG, "fixA.getUserData: " + fixA.getUserData() + " fixb: " + fixB.getUserData());
+            pts.changeToStopped();
         }
+
+        if (fixA.getUserData() == "right_well" && fixB.getUserData() == "titris") {
+            pts.isTouchingRightWall(true);
+        }
+
+        if (fixA.getUserData() == "side_well" && fixB.getUserData() == "titris") {
+            pts.isTouchingLeftWall(true);
+        }
+        Gdx.app.log(TAG, "fixA.getUserData: " + fixA.getUserData() + " fixb: " + fixB.getUserData());
     }
 
     @Override
     public void endContact(Contact contact) {
+        Fixture fixA = contact.getFixtureA();
+        Fixture fixB = contact.getFixtureB();
 
+        if (fixA.getUserData() == "right_well" && fixB.getUserData() == "titris") {
+            pts.isTouchingRightWall(false);
+        }
+
+        if (fixA.getUserData() == "side_well" && fixB.getUserData() == "titris") {
+            pts.isTouchingLeftWall(false);
+        }
     }
 
     @Override

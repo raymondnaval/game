@@ -59,8 +59,8 @@ public class WorldCreator {
 
         }
 
-        // Wall.
-        wallBounds = new Vector2[map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class).size];
+        // Left wall.
+//        wallBounds = new Vector2[map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class).size];
         int i = 0;
         for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rect = ((RectangleMapObject) object).getRectangle();
@@ -74,12 +74,24 @@ public class WorldCreator {
             fixture.filter.categoryBits = MainGame.SIDE_WELL_BIT;
             body.createFixture(fixture).setUserData("side_well");
 
-            wallBounds[i] = new Vector2(bdef.position.x, bdef.position.y);
-            i++;
+//            wallBounds[i] = new Vector2(bdef.position.x, bdef.position.y);
+//            i++;
         }
         
-        // wallbounds: (5.04,4.4)
-        // wallbounds: (2.96,4.4)
+        // Right wall.
+        for (MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rect = ((RectangleMapObject) object).getRectangle();
+
+            bdef.type = BodyDef.BodyType.StaticBody;
+            bdef.position.set((rect.getX() + rect.getWidth() / 2) / MainGame.PIXELS_PER_METER, (rect.getY() + rect.getHeight() / 2) / MainGame.PIXELS_PER_METER);
+
+            body = world.createBody(bdef);
+            shape.setAsBox(rect.getWidth() / 2 / MainGame.PIXELS_PER_METER, rect.getHeight() / 2 / MainGame.PIXELS_PER_METER);
+            fixture.shape = shape;
+            fixture.filter.categoryBits = MainGame.SIDE_WELL_BIT;
+            body.createFixture(fixture).setUserData("right_well");
+        }
+       
     }
 
 }

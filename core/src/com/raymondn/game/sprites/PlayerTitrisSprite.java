@@ -9,9 +9,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
+import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.raymondn.game.MainGame;
+import com.raymondn.game.sprites.shapes.TShape;
+import com.raymondn.game.sprites.shapes.TShapeStraightThree;
 import com.raymondn.game.states.PlayState;
 import java.util.Random;
 
@@ -21,13 +26,15 @@ import java.util.Random;
  */
 public class PlayerTitrisSprite {
 
-    private Sprite activeTitris;
+//    private Sprite activeTitris;
+    private TShape activeTitris;
     private float scale = MainGame.DEFAULT_DESCENT_SPEED / 4;
-    private Sprite[] titrisPieces;
+//    private Sprite[] titrisPieces;
     private boolean doneDescending = false;
     private Rectangle bounds;
-    private Texture titris, titris2;
-    private Vector2 position;
+//    private Texture titris, titris2;
+    private Vector2[] positions;
+    private Vector2 position, physicsBodyCoords;
     private int currentIncrement = 0;
     private float[] increments = new float[10];
     private final String TAG = "Class -- PlayerTetrisSprite";
@@ -35,38 +42,30 @@ public class PlayerTitrisSprite {
     private Body body;
     private Rectangle rect;
     private PolygonShape shape;
-    private FixtureDef fixture;
+    private FixtureDef fixtureDef;
+    private Fixture fixture;
     private PlayState ps;
+    private boolean paused = false, touchingRightWall = false, touchingLeftWall = false;
+
+    private TShape[] tPieces;
 
     public PlayerTitrisSprite(PlayState state) {
-
         ps = state;
         shape = new PolygonShape();
+        
+        position = MainGame.TITRIS_STARTING_POSITION;
 
-        // Titris pieces.
-        titris2 = new Texture(Gdx.files.internal("sprite_sheet.png"));
-        titris = new Texture(Gdx.files.internal("titris_test.png"));
-        titrisPieces = new Sprite[]{
-            new Sprite(titris, 0, 0, 16, 16),
-            new Sprite(titris, 0, 0, 32, 16),
-            new Sprite(titris2, 0, 64, 48, 16)
-        };
-
-        activeTitris = generateTitrisPiece();
+        tPieces = new TShape[7];
+        tPieces[0] = new TShapeStraightThree(body, ps);
+        activeTitris = tPieces[0];
 
         // Starting position of titris piece.
-        position = new Vector2(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, (MainGame.HEIGHT - titris.getHeight()) / MainGame.PIXELS_PER_METER);
-        /* DEBUG */
-        //position = new Vector2((MainGame.WIDTH/MainGame.PIXELS_PER_METER)/2, (MainGame.HEIGHT/ MainGame.PIXELS_PER_METER)/2);
+        positions = activeTitris.getPositions();
 
-        bounds = new Rectangle((MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER,
-                (activeTitris.getHeight() / 2) / MainGame.PIXELS_PER_METER,
-                activeTitris.getRegionWidth(), activeTitris.getRegionHeight());
-
-        Gdx.app.log(TAG, "titris width: " + titris.getWidth());
-
-        defineTitris();
-
+//        bounds = new Rectangle((MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER,
+//                (activeTitris.getHeight() / 2) / MainGame.PIXELS_PER_METER,
+//                activeTitris.getSprite(TShape.YELLOW).getRegionWidth(), activeTitris.getSprite(TShape.YELLOW).getRegionHeight());
+//        defineTitris();
         // Horizontal increments in well. MOVE TO PlayState class.
         increments[0] = MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER;
         increments[1] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10))) / MainGame.PIXELS_PER_METER;
@@ -80,114 +79,104 @@ public class PlayerTitrisSprite {
         increments[9] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10 * 9))) / MainGame.PIXELS_PER_METER;
     }
 
-    private Sprite generateTitrisPiece() {
-        int rand = new Random().nextInt(titrisPieces.length);
-
-        return titrisPieces[rand];
+    public void isTouchingRightWall(boolean tisIs) {
+        touchingRightWall = tisIs;
     }
 
-    private void defineTitris() {
-        activeTitris.setOrigin((MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER,
-                (activeTitris.getHeight() / 2) / MainGame.PIXELS_PER_METER);
-        activeTitris.setBounds(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, (MainGame.HEIGHT - titris.getHeight()) / MainGame.PIXELS_PER_METER, activeTitris.getRegionWidth(), activeTitris.getRegionHeight());
-        fixture = new FixtureDef();
+    public void isTouchingLeftWall(boolean tisIs) {
+        touchingLeftWall = tisIs;
+    }
 
-        // Define physics bit.
-        fixture.filter.categoryBits = MainGame.TITRIS_BIT;
+    public void changeToStopped() {
 
-        // Collision with side walls and bottom well and other titris pieces.
-        fixture.filter.maskBits = MainGame.SIDE_WELL_BIT
-                | MainGame.BOTTOM_WELL_BIT | MainGame.TITRIS_BIT;
+        Filter stoppedFilter = new Filter();
+        stoppedFilter.categoryBits = MainGame.STOPPED_BIT;
+        stoppedFilter.maskBits = MainGame.SIDE_WELL_BIT | MainGame.RIGHT_WELL_BIT
+                | MainGame.STOPPED_BIT | MainGame.DESCENDING_BIT | MainGame.BOTTOM_WELL_BIT;
+        activeTitris.getFixture().setFilterData(stoppedFilter);
 
-        // Create a rectangle object because the the objects in the loop are all rectangles.
-        rect = new Rectangle(
-                position.x, position.y,
-                activeTitris.getWidth() / MainGame.PIXELS_PER_METER,
-                activeTitris.getHeight() / MainGame.PIXELS_PER_METER);
+//        Gdx.app.log(TAG, "maskbits: " + fixture.getFilterData().categoryBits);
+    }
 
-        bdef.type = BodyDef.BodyType.DynamicBody;
-
-        // Position the rectangle exactly where its drawn on the Tile map.
-        bdef.position.set((rect.getX() + rect.getWidth() / 2), (rect.getY() + rect.getHeight() / 2));
-
-        // @TODO Add comments to these below...
-        body = ps.getWorld().createBody(bdef);
-        shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-        fixture.shape = shape;
-
-        body.createFixture(fixture).setUserData("titris");
-
-        EdgeShape side = new EdgeShape();
-        side.set(new Vector2(-2 / MainGame.PIXELS_PER_METER, 6 / MainGame.PIXELS_PER_METER),
-                new Vector2(2 / MainGame.PIXELS_PER_METER, 6 / MainGame.PIXELS_PER_METER));
-        fixture.isSensor = true;
-//        body.createFixture(fixture).setUserData(this);
+    public String getBit() {
+        String bit = "";
+        if (activeTitris.getFixture().getFilterData().categoryBits == MainGame.DESCENDING_BIT) {
+            bit = "descending";
+        }
+        if (activeTitris.getFixture().getFilterData().categoryBits == MainGame.STOPPED_BIT) {
+            bit = "stopped";
+        }
+        return bit;
     }
 
     public void update(float dt) {
 
-        double degToRads = Math.toRadians(activeTitris.getRotation());
-        Vector2 newCoords = new Vector2(
-                position.x + (getTitrisWidth() / 2),
+//        double degToRads = Math.toRadians(activeTitris.getRotation());
+        physicsBodyCoords = new Vector2(
+                position.x + (getTitrisWidth() / 2) + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER),
                 position.y + (getTitrisHeight() / 2));
-
-        // If not descending, generate new piece.
-//        if (position.y > MainGame.WELL_DEPTH - (activeTitris.getRegionHeight() / MainGame.PIXELS_PER_METER)) {
-        if (!ps.madeContact()) {
-
-            position.y -= scale;
-
-            // Change titris physics boundaries when rotated.
-            if (activeTitris.getRotation() == 90.0f) {
-                newCoords.x = position.x + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2);
-                newCoords.y = position.y + getTitrisWidth() / 2;
-            }
-            if (activeTitris.getRotation() == 180.0f) {
-                newCoords.x = position.x - getTitrisWidth() / 2 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
-//                newCoords.y = activePiece.getY() + activePiece.getTitrisWidth() / 2;
-            }
-            if (activeTitris.getRotation() == 270.0f) {
-                newCoords.x = position.x + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2);
-                newCoords.y = position.y - getTitrisWidth() / 2 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
-            }
-            bounds.setPosition(position.x, position.y);
-            body.setTransform(newCoords, (float) degToRads);
-
-        } else {
-
-            // Stop the image at the base of the well.
-            position.y = MainGame.WELL_DEPTH - (activeTitris.getRegionHeight() / MainGame.PIXELS_PER_METER);
-
-//            Gdx.app.log(TAG, "getTransform: " + body.getTransform().getPosition().toString());
-            body.setTransform(newCoords, (float) degToRads);
-            doneDescending = true;
+//
+//        // Change titris physics boundaries when rotated.
+//        float rotatedHeight = getTitrisHeight() / 2;
+//        if (activeTitris.getRotation() == 90.0f) {
+//            newCoords.x = position.x + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2);
+//            newCoords.y = position.y + getTitrisWidth() / 2;
+//            rotatedHeight = getTitrisWidth() / 2;
+//        }
+//        if (activeTitris.getRotation() == 180.0f) {
+//            newCoords.x = position.x - getTitrisWidth() / 2 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
+////                newCoords.y = activePiece.getY() + activePiece.getTitrisWidth() / 2;
+//            rotatedHeight = getTitrisHeight() / 2;
+//        }
+//        if (activeTitris.getRotation() == 270.0f) {
+//            newCoords.x = position.x + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2);
+//            newCoords.y = position.y - getTitrisWidth() / 2 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
+//            rotatedHeight = -((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2);
+//        }
+        // If not descending bit, stop piece.
+//        if (fixture.getFilterData().categoryBits == MainGame.DESCENDING_BIT) {
+        for (int i = 0; i < positions.length; i++) {
+            positions[i].y -= scale;
         }
+        activeTitris.getBody().setTransform(physicsBodyCoords, 0);
+//            body.setTransform(newCoords, (float) degToRads);
+//        } else {
+        // TODO: Stop the image once the bottom part of the piece touches the top of another piece. Create an edge shape.
+//            Gdx.app.log(TAG, "getPosition: " + body.getPosition().toString() + " bdef: " + bdef.position.toString() + " base of well: " + MainGame.WELL_DEPTH + " rotated height: " + rotatedHeight);
+//            doneDescending = true;
+//            position.y = body.getPosition().y - rotatedHeight;
+//        }
+    }
+
+    public void debugGetPosition(int pos) {
+//        Gdx.app.log(TAG, "getPosition " + pos + ": " + body.getPosition().toString());
 
     }
 
+    //*****rotate()*****
     public void rotate() {
         boolean canRotate = false;
 
-        if (currentIncrement == 0 && activeTitris.getWidth() == MainGame.PIXEL_SIZE * 2) {
-            if (activeTitris.getRotation() + 90f != 180f) {
-                canRotate = true;
-            }
-        } else {
-            canRotate = true;
-        }
-
-        if (canRotate) {
-            activeTitris.rotate(90f);
-        }
-
-        if (activeTitris.getRotation() == 360.0) {
-            activeTitris.setRotation(0f);
-        }
-
-        Gdx.app.log(TAG, "getrotation: " + activeTitris.getRotation()
-                + " getoriginx: " + activeTitris.getOriginX() + " getoriginY: "
-                + activeTitris.getOriginY() + " regionwidth: " + activeTitris.getRegionWidth()
-                + " regionheight: " + activeTitris.getRegionHeight() + " getscalex: " + activeTitris.getScaleX());
+//        if (activeTitris.getWidth() / MainGame.PIXEL_SIZE > currentIncrement + 1) {
+//            if (activeTitris.getRotation() + 90f != 180f) {
+//                canRotate = true;
+//            }
+//        } else {
+//            canRotate = true;
+//        }
+//
+//        if (canRotate) {
+//            activeTitris.rotate(90f);
+//        }
+//
+//        if (activeTitris.getRotation() == 360.0) {
+//            activeTitris.setRotation(0f);
+//        }
+//
+//        Gdx.app.log(TAG, "getrotation: " + activeTitris.getRotation()
+//                + " getoriginx: " + activeTitris.getOriginX() + " getoriginY: "
+//                + activeTitris.getOriginY() + " regionwidth: " + activeTitris.getRegionWidth()
+//                + " regionheight: " + activeTitris.getRegionHeight() + " getwidth: " + activeTitris.getWidth());
     }
 
     public void setX(boolean movingRight) {
@@ -195,24 +184,13 @@ public class PlayerTitrisSprite {
         // If not at the bottom of the well, enable left and right movement.
         if (!doneDescending) {
             if (movingRight) {
-                if (currentIncrement < 9 && activeTitris.getWidth() == MainGame.PIXEL_SIZE) {
-                    currentIncrement++;
-                    position.x = increments[currentIncrement];
-                }
-                if (currentIncrement < 8 && activeTitris.getWidth() == MainGame.PIXEL_SIZE * 2) {
-                    currentIncrement++;
-                    position.x = increments[currentIncrement];
-                }
-                if (currentIncrement < 7 && activeTitris.getWidth() == MainGame.PIXEL_SIZE * 3) {
+                if (!touchingRightWall && currentIncrement < 9) {
                     currentIncrement++;
                     position.x = increments[currentIncrement];
                 }
             } else {
-                if (currentIncrement > 0 && activeTitris.getRotation() != 180.0) {
-                    currentIncrement--;
-                    position.x = increments[currentIncrement];
-                }
-                if (currentIncrement > 1 && activeTitris.getRotation() == 180.0) {
+                Gdx.app.log(TAG, "touching left wall: " + touchingLeftWall);
+                if (!touchingLeftWall && currentIncrement > 0) {
                     currentIncrement--;
                     position.x = increments[currentIncrement];
                 }
@@ -231,36 +209,41 @@ public class PlayerTitrisSprite {
         }
     }
 
+    public void pause(boolean pauseGame) {
+        paused = pauseGame;
+        if (paused) {
+            scale = 0;
+        } else {
+            scale = MainGame.DEFAULT_DESCENT_SPEED / 4;
+        }
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
     public Rectangle getBounds() {
         return bounds;
     }
 
-    public float getX() {
-        return position.x;
-    }
-
     public float getTitrisWidth() {
-        return activeTitris.getWidth() / MainGame.PIXELS_PER_METER;
+        return activeTitris.getWidth();
     }
 
     public float getTitrisHeight() {
-        return activeTitris.getHeight() / MainGame.PIXELS_PER_METER;
+        return activeTitris.getHeight();
     }
 
     public boolean isDoneDescending() {
         return doneDescending;
     }
 
-    public float getY() {
-        return position.y;
+    public Vector2[] getXY() {
+        return activeTitris.getPositions();
     }
 
-    public TextureRegion getTitrisPiece() {
-        return activeTitris;
-    }
-
-    public Sprite getSprite() {
-        return activeTitris;
+    public Sprite[] getTitrisPiece() {
+        return activeTitris.getFullShape();
     }
 
     public float getOriginX() {
