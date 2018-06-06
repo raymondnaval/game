@@ -1,6 +1,9 @@
 # New Game
 Creating a game using the LibGdx engine. Could be Metroidvania style. Could be Connect 4. Could be both.
 
+6/6/18
+- Rewrote falling blocks so that each square is its own sprite, which results in randomly generated colored blocks.
+
 4/19/18
 - Created new branch for getting the descending block right.
 - Descending image with fixed speed.
