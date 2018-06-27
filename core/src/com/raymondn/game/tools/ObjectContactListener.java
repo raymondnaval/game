@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.raymondn.game.MainGame;
 import com.raymondn.game.sprites.PlayerTitrisSprite;
+import com.raymondn.game.sprites.PlayerTitrisSprite2;
 
 /**
  *
@@ -22,9 +23,9 @@ import com.raymondn.game.sprites.PlayerTitrisSprite;
 public class ObjectContactListener implements ContactListener {
 
     private final String TAG = "Class: ObjectContactListener";
-    PlayerTitrisSprite pts;
+    PlayerTitrisSprite2 pts;
 
-    public ObjectContactListener(PlayerTitrisSprite pts) {
+    public ObjectContactListener(PlayerTitrisSprite2 pts) {
         this.pts = pts;
     }
 
@@ -33,22 +34,25 @@ public class ObjectContactListener implements ContactListener {
         Fixture fixA = contact.getFixtureA();
         Fixture fixB = contact.getFixtureB();
 
-        if (fixA.getUserData() == "bottom_well" && fixB.getUserData() == "titris") {
-            pts.changeToStopped();
-
+        if (fixA.getUserData() == "bottom_edge" && fixB.getUserData() == "bottom_well") {
+//            pts.changeToStopped();
+        }
+        
+        if (fixA.getUserData() == "bottom_edge" && fixB.getUserData() == "titris") {
+//            pts.changeToStopped();
         }
 
         if (fixA.getUserData() == "titris" && fixB.getUserData() == "titris") {
-            Gdx.app.log(TAG, "fixA.getUserData: " + fixA.getUserData() + " fixb: " + fixB.getUserData());
-            pts.changeToStopped();
+//            Gdx.app.log(TAG, "fixA.getUserData: " + fixA.getUserData() + " fixb: " + fixB.getUserData());
+//            pts.changeToStopped();
         }
 
         if (fixA.getUserData() == "right_well" && fixB.getUserData() == "titris") {
-            pts.isTouchingRightWall(true);
+//            pts.isTouchingRightWall(true);
         }
 
         if (fixA.getUserData() == "side_well" && fixB.getUserData() == "titris") {
-            pts.isTouchingLeftWall(true);
+//            pts.isTouchingLeftWall(true);
         }
         Gdx.app.log(TAG, "fixA.getUserData: " + fixA.getUserData() + " fixb: " + fixB.getUserData());
     }
@@ -59,12 +63,14 @@ public class ObjectContactListener implements ContactListener {
         Fixture fixB = contact.getFixtureB();
 
         if (fixA.getUserData() == "right_well" && fixB.getUserData() == "titris") {
-            pts.isTouchingRightWall(false);
+//            pts.isTouchingRightWall(false);
         }
 
         if (fixA.getUserData() == "side_well" && fixB.getUserData() == "titris") {
-            pts.isTouchingLeftWall(false);
+            Gdx.app.log(TAG, "not touching left wall");
+//            pts.isTouchingLeftWall(false);
         }
+        Gdx.app.log(TAG, "end contact -- fixA.getUserData: " + fixA.getUserData() + " fixb: " + fixB.getUserData());
     }
 
     @Override

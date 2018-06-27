@@ -29,6 +29,7 @@ public class WorldCreator {
     private TiledMap map;
     private World world;
     private Vector2[] wallBounds, groundBounds;
+    Body rightBody;
 
     public WorldCreator(PlayState play) {
         map = play.getMap();
@@ -85,13 +86,18 @@ public class WorldCreator {
             bdef.type = BodyDef.BodyType.StaticBody;
             bdef.position.set((rect.getX() + rect.getWidth() / 2) / MainGame.PIXELS_PER_METER, (rect.getY() + rect.getHeight() / 2) / MainGame.PIXELS_PER_METER);
 
-            body = world.createBody(bdef);
+            rightBody = world.createBody(bdef);
             shape.setAsBox(rect.getWidth() / 2 / MainGame.PIXELS_PER_METER, rect.getHeight() / 2 / MainGame.PIXELS_PER_METER);
             fixture.shape = shape;
             fixture.filter.categoryBits = MainGame.SIDE_WELL_BIT;
-            body.createFixture(fixture).setUserData("right_well");
+            rightBody.createFixture(fixture).setUserData("right_well");
+            rightBody.setActive(false);
         }
        
+    }
+    
+    public Body getRightBody() {
+        return rightBody;
     }
 
 }

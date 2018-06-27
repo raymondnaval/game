@@ -1,19 +1,14 @@
 package com.raymondn.game.sprites;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.Filter;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.raymondn.game.MainGame;
 import com.raymondn.game.sprites.shapes.TShape;
 import com.raymondn.game.sprites.shapes.TShapeStraightThree;
@@ -32,18 +27,17 @@ public class PlayerTitrisSprite {
 //    private Sprite[] titrisPieces;
     private boolean doneDescending = false;
     private Rectangle bounds;
-//    private Texture titris, titris2;
     private Vector2[] positions;
-    private Vector2 position, physicsBodyCoords;
+    private Vector2 position;
+    private Vector2 physicsBodyCoords; // Position the physics box.
     private int currentIncrement = 0;
-    private float[] increments = new float[10];
     private final String TAG = "Class -- PlayerTetrisSprite";
     private BodyDef bdef = new BodyDef();
-    private Body body;
+    private Body body, bodyEdge;
     private Rectangle rect;
     private PolygonShape shape;
     private FixtureDef fixtureDef;
-    private Fixture fixture;
+//    private Fixture fixture;
     private PlayState ps;
     private boolean paused = false, touchingRightWall = false, touchingLeftWall = false;
 
@@ -52,31 +46,30 @@ public class PlayerTitrisSprite {
     public PlayerTitrisSprite(PlayState state) {
         ps = state;
         shape = new PolygonShape();
-        
-        position = MainGame.TITRIS_STARTING_POSITION;
 
-        tPieces = new TShape[7];
-        tPieces[0] = new TShapeStraightThree(body, ps);
-        activeTitris = tPieces[0];
+        position = new Vector2(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER,
+                (MainGame.HEIGHT - MainGame.PIXEL_SIZE) / MainGame.PIXELS_PER_METER);
 
-        // Starting position of titris piece.
+        tPieces = new TShape[6];
+        tPieces[0] = new TShapeStraightThree(ps);
+//        tPieces[1] = new TShapeC(body, ps);
+//        tPieces[2] = new TShapeBigE(body, ps);
+//        tPieces[3] = new TShapePlus(body, ps);
+//        tPieces[4] = new TShapeSingle(body, ps);
+//        tPieces[5] = new TShapeT(body, ps);
+
+        activeTitris = generateRandomTitris();
+        activeTitris.activateTShapeBoundaries();
+
+        // Starting position of titris sprite piece.
         positions = activeTitris.getPositions();
 
-//        bounds = new Rectangle((MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER,
-//                (activeTitris.getHeight() / 2) / MainGame.PIXELS_PER_METER,
-//                activeTitris.getSprite(TShape.YELLOW).getRegionWidth(), activeTitris.getSprite(TShape.YELLOW).getRegionHeight());
-//        defineTitris();
-        // Horizontal increments in well. MOVE TO PlayState class.
-        increments[0] = MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER;
-        increments[1] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10))) / MainGame.PIXELS_PER_METER;
-        increments[2] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10 * 2))) / MainGame.PIXELS_PER_METER;
-        increments[3] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10 * 3))) / MainGame.PIXELS_PER_METER;
-        increments[4] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10 * 4))) / MainGame.PIXELS_PER_METER;
-        increments[5] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10 * 5))) / MainGame.PIXELS_PER_METER;
-        increments[6] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10 * 6))) / MainGame.PIXELS_PER_METER;
-        increments[7] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10 * 7))) / MainGame.PIXELS_PER_METER;
-        increments[8] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10 * 8))) / MainGame.PIXELS_PER_METER;
-        increments[9] = (MainGame.LEFT_WALL + (((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 10 * 9))) / MainGame.PIXELS_PER_METER;
+    }
+
+    public TShape generateRandomTitris() {
+        int rand = new Random().nextInt(6);
+        Gdx.app.log(TAG, "titrisPiece: " + rand);
+        return tPieces[0];
     }
 
     public void isTouchingRightWall(boolean tisIs) {
@@ -134,18 +127,27 @@ public class PlayerTitrisSprite {
 //            rotatedHeight = -((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2);
 //        }
         // If not descending bit, stop piece.
-//        if (fixture.getFilterData().categoryBits == MainGame.DESCENDING_BIT) {
-        for (int i = 0; i < positions.length; i++) {
-            positions[i].y -= scale;
-        }
-        activeTitris.getBody().setTransform(physicsBodyCoords, 0);
+        if (activeTitris.getFixture().getFilterData().categoryBits == MainGame.DESCENDING_BIT) {
+            for (int i = 0; i < positions.length; i++) {
+                positions[i].y -= scale;
+            }
+            physicsBodyCoords.y = positions[0].y + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2);
+            activeTitris.getBody().setTransform(physicsBodyCoords, 0);
 //            body.setTransform(newCoords, (float) degToRads);
-//        } else {
-        // TODO: Stop the image once the bottom part of the piece touches the top of another piece. Create an edge shape.
+        } else {
+            // TODO: Stop the image once the bottom part of the piece touches the top of another piece. Create an edge shape.
 //            Gdx.app.log(TAG, "getPosition: " + body.getPosition().toString() + " bdef: " + bdef.position.toString() + " base of well: " + MainGame.WELL_DEPTH + " rotated height: " + rotatedHeight);
-//            doneDescending = true;
-//            position.y = body.getPosition().y - rotatedHeight;
-//        }
+            
+            doneDescending = true;
+            try {
+                Thread.sleep(500);
+            } catch (Exception ex) {
+                Gdx.app.log(TAG, ex.toString());
+            }
+//            positions[0].y = activeTitris.getBody().getPosition().y - ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2);
+            activeTitris.stop(activeTitris.getBody().getPosition().y - ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2));
+        }
+
     }
 
     public void debugGetPosition(int pos) {
@@ -186,13 +188,15 @@ public class PlayerTitrisSprite {
             if (movingRight) {
                 if (!touchingRightWall && currentIncrement < 9) {
                     currentIncrement++;
-                    position.x = increments[currentIncrement];
+                    position.x = ps.getHorizontalIncrements()[currentIncrement];
+                    activeTitris.increment(currentIncrement);
                 }
             } else {
                 Gdx.app.log(TAG, "touching left wall: " + touchingLeftWall);
                 if (!touchingLeftWall && currentIncrement > 0) {
                     currentIncrement--;
-                    position.x = increments[currentIncrement];
+                    position.x = ps.getHorizontalIncrements()[currentIncrement];
+                    activeTitris.increment(currentIncrement);
                 }
             }
             Gdx.app.log("increment", "" + currentIncrement);

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.raymondn.game.MainGame;
 import com.raymondn.game.sprites.PlayerTitrisSprite;
@@ -25,52 +26,85 @@ public class TShapeStraightThree extends TShape {
     private Vector2 physicsBoxPosition;
     private Vector2[] spritePositions;
     private float height, width;
-    private final int TOTAL_SQUARES = 3; // Number of squres in graphic.
+    private final int TOTAL_SQUARES = 3; // Number of squares in graphic.
     private final String TAG = "Class: TShapeStraightThree";
 
-    /**
-     *
-     * @param startingPosition The starting position of the top-left square
-     * sprite.
-     */
-    public TShapeStraightThree(Body body, PlayState ps) {
-        super(body, ps);
+    public TShapeStraightThree(PlayState ps) {
+        super(ps);
         squares = getRandomSquares(TOTAL_SQUARES);
         spritePositions = new Vector2[TOTAL_SQUARES];
         setFullShape(squares);
-        positionStraightThree();
-        height = squares[0].getHeight();
+        positionSprites();
+        height = MainGame.PIXEL_SIZE;
         width = height * 3;
 
-//        position = new Vector2(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, (MainGame.HEIGHT - height) / MainGame.PIXELS_PER_METER);
-        // Create a rectangle object because the the objects in the loop are all rectangles.
+    }
+
+    @Override
+    public void activateTShapeBoundaries() {
+
+        // Set the width and height of physics box, but not the position of it.
         Rectangle rect = new Rectangle(
-                MainGame.TITRIS_STARTING_POSITION.x, MainGame.TITRIS_STARTING_POSITION.y,
+                getStartingPosition().x,
+                getStartingPosition().y,
                 width / MainGame.PIXELS_PER_METER,
                 height / MainGame.PIXELS_PER_METER);
-        Gdx.app.log(TAG, "defineTitris -- width: " + width + " height: " + height);
+        Gdx.app.log(TAG, "rect: " + rect.toString() + " width: " + (width / MainGame.PIXELS_PER_METER)
+                + " height: " + (height / MainGame.PIXELS_PER_METER));
 
         PolygonShape shape = new PolygonShape();
-        physicsBoxPosition = new Vector2((rect.getX() + rect.getWidth() / 2), (rect.getY() + rect.getHeight() / 2));
-        shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-        defineTitris(squares[0], MainGame.TITRIS_STARTING_POSITION, physicsBoxPosition, width, height, (MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER,
-                (height / 2) / MainGame.PIXELS_PER_METER, shape);
+        physicsBoxPosition = new Vector2((rect.getX() + rect.getWidth() / 2), (rect.getY() + rect.getHeight() / 2) + 2);
 
+        // Draw the box shape, but not the position of it.
+        shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
+
+        // Top and bottom edges of shape.
+        EdgeShape topEdgeShape = new EdgeShape();
+        topEdgeShape.set(-rect.getWidth() / 2 + (5.0f / MainGame.PIXELS_PER_METER),
+                rect.getHeight() / 2,
+                rect.getWidth() / 2 - (5.0f / MainGame.PIXELS_PER_METER),
+                rect.getHeight() / 2);
+
+        EdgeShape bottomEdgeShape = new EdgeShape();
+        bottomEdgeShape.set(-rect.getWidth() / 2 + (5.0f / MainGame.PIXELS_PER_METER),
+                -rect.getHeight() / 2,
+                rect.getWidth() / 2 - (5.0f / MainGame.PIXELS_PER_METER),
+                -rect.getHeight() / 2);
+
+//        defineTitris(squares[0], physicsBoxPosition, (MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER,
+//                (height / 2) / MainGame.PIXELS_PER_METER, shape, topEdgeShape, bottomEdgeShape);
+
+        topEdgeShape.dispose();
+        bottomEdgeShape.dispose();
         shape.dispose();
     }
 
-    /**
-     * Create Vector2 coordinates for all three sprites.
-     *
-     */
-    private void positionStraightThree() {
-        spritePositions[0] = MainGame.TITRIS_STARTING_POSITION;
-        spritePositions[1] = new Vector2(MainGame.TITRIS_STARTING_POSITION.x
+    @Override
+    public void increment(int pos) {
+
+        spritePositions[0].x = getState().getHorizontalIncrements()[pos];
+        spritePositions[1].x = spritePositions[0].x 
+                + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
+        spritePositions[2].x = spritePositions[1].x 
+                + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
+    }
+    
+    @Override
+    public void stop(float bottomSprite) {
+        spritePositions[0].y = bottomSprite;
+        spritePositions[1].y = bottomSprite;
+        spritePositions[2].y = bottomSprite;
+    }
+
+    @Override
+    protected void positionSprites() {
+        spritePositions[0] = getStartingPosition();
+        spritePositions[1] = new Vector2(getStartingPosition().x
                 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER),
-                MainGame.TITRIS_STARTING_POSITION.y);
-        spritePositions[2] = new Vector2(spritePositions[1].x 
-                + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER), 
-                MainGame.TITRIS_STARTING_POSITION.y);
+                getStartingPosition().y);
+        spritePositions[2] = new Vector2(spritePositions[1].x
+                + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER),
+                getStartingPosition().y);
         setPositions(spritePositions);
     }
 
