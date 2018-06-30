@@ -104,13 +104,9 @@ public class PlayState implements Screen, InputProcessor {
         // Fill in all well spaces with Vector2 coordinates.
         for (int row = 0; row < WELL_SPACES.length; row++) {
             for (int col = 0; col < WELL_SPACES[row].length; col++) {
-//                if (row == 0) {
-                Gdx.app.log(TAG, "increment x: " + increments[col]
-                        + " increment y: " + verticalIncrements[row]);
+//                Gdx.app.log(TAG, "increment x: " + increments[col]
+//                        + " increment y: " + verticalIncrements[row]);
                 WELL_SPACES[row][col] = new TitrisSquare(this, body, increments[col], verticalIncrements[row]);
-//                } else {
-//                    WELL_SPACES[row][col] = new TitrisSquare(this);
-//                }
             }
         }
 

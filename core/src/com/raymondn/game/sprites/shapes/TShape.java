@@ -38,7 +38,6 @@ public class TShape {
     private HashMap<String, Sprite> squares;
     private FixtureDef fixtureDef;
     private BodyDef bdef;
-    private Rectangle rect;
     private PolygonShape shape;
     private float width, height;
     public Sprite[] fullShape;
@@ -49,6 +48,9 @@ public class TShape {
     private Vector2[] positions;
     private final String TAG = "Class: TShape";
     private Vector2 startingPosition;
+    
+    // Sprite boundaries for collision detection.
+    protected Rectangle[] activeBoundaries;
 
     public TShape(Body body, PlayState ps) {
 
@@ -122,9 +124,14 @@ public class TShape {
     public Vector2[] getPositions() {
         return positions;
     }
+    
+    public Rectangle[] getActiveBoundaries() {
+        return activeBoundaries;
+    }
 
     public void setPositions(Vector2[] positions) {
         this.positions = positions;
+//        setActiveBoundaries(positions);
     }
 
     public void setFullShape(Sprite[] fullShape) {
@@ -149,6 +156,10 @@ public class TShape {
         }
 
         return temp;
+    }
+    
+    protected void setActiveBoundaries(Vector2[] bounds) {
+        
     }
 
     public void activateTShapeBoundaries() {
@@ -221,6 +232,13 @@ public class TShape {
      */
     public void stop(float bottomSprite) {
 
+    }
+    
+    /**
+     * Set rectangle boundaries for each sprite for collision detection.
+     */
+    protected void setActiveBoundaries() {
+        
     }
 
     public Body getBody() {

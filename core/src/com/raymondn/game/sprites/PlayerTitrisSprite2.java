@@ -7,7 +7,6 @@ package com.raymondn.game.sprites;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.raymondn.game.MainGame;
 import com.raymondn.game.sprites.shapes.TShape;
@@ -27,7 +26,7 @@ public class PlayerTitrisSprite2 {
     private PlayState ps;
     private TShape[] tPieces;
     private double oneSecond = 1000000000.0;
-    private float DESCENT_SPEED = (float) oneSecond * 3 / 4;
+    private float DESCENT_SPEED = (float) oneSecond / 2;
     private String TAG = "Class: PlayerTitrisSprite2";
     private int verticalIncrement = 32;
 
@@ -81,57 +80,56 @@ public class PlayerTitrisSprite2 {
             pos[i] = new Vector2();
             pos[i].x = activeTitris.getPositions()[i].x;
 
-            // If lowest point of sprite touches the base of the well, stop the
-            // sprite.
+            // If lowest point of sprite touches the base of the well or another 
+            // sprite, stop the descending sprite.
             if (activeTitris.lowestPoint() == ps.getVerticalIncrements()[0]) {
                 pos[i].y = ps.getVerticalIncrements()[0];
                 stopDescent = true;
-
+            } 
+            
+            // Else if the space below the descending sprite is an active static
+            // body, stop descent.
+            else if (verticalIncrement > 0 && PlayState.WELL_SPACES[verticalIncrement - 1][i].isActivatedPhysicsSquare()) {
+                pos[i].y = ps.getVerticalIncrements()[verticalIncrement];
+                stopDescent = true;
             } else {
-//                pos[i].y = activeTitris.getPositions()[i].y - (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
                 pos[i].y = ps.getVerticalIncrements()[verticalIncrement];
             }
         }
 
         activeTitris.setPositions(pos);
-//        Gdx.app.log(TAG, "update -- pos: " + pos[0].toString());
 
         // Activate static body when shape stops moving.
         if (stopDescent) {
 
             // Iterate through each row.
-//            for (int row = 0; row < PlayState.WELL_SPACES.length; row++) {
-            for (int row = 0; row < 1; row++) {
-                
+            for (int row = 0; row < PlayState.WELL_SPACES.length; row++) {
+
                 // Iterate through each column.
                 for (int col = 0; col < PlayState.WELL_SPACES[0].length; col++) {
-                    
+
                     // Iterate through each sprite position.
                     for (int p = 0; p < activeTitris.getPositions().length; p++) {
-                        
-                        
 
                         // If the y coordinate of the shape match the y 
                         // coordinate of the well space, activate physics square.
-                        
                         // Round position of descending sprite value to 2 
                         // decimal places.
                         DecimalFormat df = new DecimalFormat("###.##");
                         float activeTitrisX = Float.valueOf(df.format(activeTitris.getPositions()[p].x));
-                        
-                        Gdx.app.log(TAG, "pos: " + p + 
-                                " \nactiveTitris.getPositions()[p].x: " 
-                                + activeTitrisX
-                            + " \nPlayState.WELL_SPACES[row][col].getXY().x: " 
-                                + PlayState.WELL_SPACES[row][col].getXY().x);
-                        
+
+//                        Gdx.app.log(TAG, "pos: " + p
+//                                + " \nactiveTitris.getPositions()[p].x: "
+//                                + activeTitrisX
+//                                + " \nPlayState.WELL_SPACES[row][col].getXY().x: "
+//                                + PlayState.WELL_SPACES[row][col].getXY().x);
                         if (PlayState.WELL_SPACES[row][col].getXY().y
                                 == activeTitris.getPositions()[p].y
                                 && PlayState.WELL_SPACES[row][col].getXY().x
                                 == activeTitrisX) {
                             PlayState.WELL_SPACES[row][p].activatePhysicsSquare(true);
                         }
-                        
+
                     }
 
                 }

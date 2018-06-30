@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.raymondn.game.MainGame;
 import com.raymondn.game.sprites.PlayerTitrisSprite;
 import com.raymondn.game.states.PlayState;
+import java.text.DecimalFormat;
 
 /**
  *
@@ -33,6 +34,7 @@ public class TShapeStraightThree extends TShape {
         super(ps);
         squares = getRandomSquares(TOTAL_SQUARES);
         spritePositions = new Vector2[TOTAL_SQUARES];
+        activeBoundaries = new Rectangle[TOTAL_SQUARES];
         setFullShape(squares);
         positionSprites();
         height = MainGame.PIXEL_SIZE;
@@ -73,7 +75,6 @@ public class TShapeStraightThree extends TShape {
 
 //        defineTitris(squares[0], physicsBoxPosition, (MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER,
 //                (height / 2) / MainGame.PIXELS_PER_METER, shape, topEdgeShape, bottomEdgeShape);
-
         topEdgeShape.dispose();
         bottomEdgeShape.dispose();
         shape.dispose();
@@ -83,12 +84,12 @@ public class TShapeStraightThree extends TShape {
     public void increment(int pos) {
 
         spritePositions[0].x = getState().getHorizontalIncrements()[pos];
-        spritePositions[1].x = spritePositions[0].x 
+        spritePositions[1].x = spritePositions[0].x
                 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
-        spritePositions[2].x = spritePositions[1].x 
+        spritePositions[2].x = spritePositions[1].x
                 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
     }
-    
+
     @Override
     public void stop(float bottomSprite) {
         spritePositions[0].y = bottomSprite;
@@ -106,6 +107,20 @@ public class TShapeStraightThree extends TShape {
                 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER),
                 getStartingPosition().y);
         setPositions(spritePositions);
+        setActiveBoundaries();
+    }
+
+    @Override
+    public void setActiveBoundaries(Vector2[] positions) {
+        for (int i = 0; i < spritePositions.length; i++) {
+            DecimalFormat df = new DecimalFormat("###.##");
+            float roundHorzPosTo2DecimalPlaces = Float.valueOf(df.format(spritePositions[i].x + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER)));
+            activeBoundaries[i] = new Rectangle(
+                    roundHorzPosTo2DecimalPlaces,
+                    spritePositions[i].y,
+                    MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER,
+                    MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
+        }
     }
 
     @Override

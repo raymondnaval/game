@@ -25,7 +25,8 @@ public class TitrisSquare {
     private Sprite sprite;
     private boolean isActiveBody;
     private PlayState state;
-    
+    private Rectangle bounds;
+
     // Physics variables.
     private Body body;
     private BodyDef bdef;
@@ -37,7 +38,11 @@ public class TitrisSquare {
         this.body = body;
         location = new Vector2(x, y);
         isActiveBody = false;
-
+        bounds = new Rectangle(
+                location.x,
+                location.y,
+                MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER,
+                MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
         setPhysicsBox();
     }
 
@@ -45,45 +50,49 @@ public class TitrisSquare {
         state = ps;
         isActiveBody = false;
     }
+    
+    public Rectangle getSpriteBoundaries() {
+        return bounds;
+    }
 
     private void setPhysicsBox() {
         bdef = new BodyDef();
         fixtureDef = new FixtureDef();
-        
-        Rectangle rect = new Rectangle(
-                location.x,
-                location.y,
-                MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER,
-                MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
-        
+
+//        Rectangle rect = new Rectangle(
+//                location.x,
+//                location.y,
+//                MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER,
+//                MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
+
         bdef.type = BodyDef.BodyType.StaticBody;
-        
+
         // Set position of square.
-        bdef.position.set(location.x 
-                + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER)/2),
+        bdef.position.set(location.x
+                + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2),
                 location.y
-        + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER)/2));
-        
+                + ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2));
+
         body = state.getWorld().createBody(bdef);
         PolygonShape shape = new PolygonShape();
-        
+
         // Draw the box shape, but not the position of it.
-        shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-        
+        shape.setAsBox(bounds.getWidth() / 2, bounds.getHeight() / 2);
+
         fixtureDef.shape = shape;
         body.createFixture(fixtureDef);
         body.setActive(isActiveBody);
     }
-    
-    public void activatePhysicsSquare(boolean isActiveBody){
+
+    public void activatePhysicsSquare(boolean isActiveBody) {
         this.isActiveBody = isActiveBody;
         body.setActive(isActiveBody);
     }
-    
+
     public boolean isActivatedPhysicsSquare() {
         return isActiveBody;
     }
-    
+
     public Vector2 getXY() {
         return location;
     }

@@ -91,7 +91,6 @@ public class WorldCreator {
             fixture.shape = shape;
             fixture.filter.categoryBits = MainGame.SIDE_WELL_BIT;
             rightBody.createFixture(fixture).setUserData("right_well");
-            rightBody.setActive(false);
         }
        
     }
