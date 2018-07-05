@@ -48,7 +48,8 @@ public class TShape {
     private Vector2[] positions;
     private final String TAG = "Class: TShape";
     private Vector2 startingPosition;
-    
+    protected int tileWidth;
+
     // Sprite boundaries for collision detection.
     protected Rectangle[] activeBoundaries;
 
@@ -101,7 +102,7 @@ public class TShape {
     protected PlayState getState() {
         return state;
     }
-    
+
     /**
      *
      * @return lowest - The lowest point of the descending shape.
@@ -109,7 +110,7 @@ public class TShape {
     public float lowestPoint() {
         float lowest = positions[0].y;
         for (int i = 1; i < positions.length; i++) {
-            if(lowest > positions[i].y) {
+            if (lowest > positions[i].y) {
                 lowest = positions[i].y;
             }
 //            Gdx.app.log(TAG, "getPositions() -- position: " + i + ") " + positions[i].y);
@@ -119,19 +120,30 @@ public class TShape {
 
     /**
      *
-     * @return positions The starting position of each square sprite.
+     * @return positions The position of each square sprite.
      */
     public Vector2[] getPositions() {
         return positions;
     }
-    
+
     public Rectangle[] getActiveBoundaries() {
         return activeBoundaries;
     }
 
     public void setPositions(Vector2[] positions) {
         this.positions = positions;
-//        setActiveBoundaries(positions);
+    }
+
+    public void setXPositions(float[] x) {
+        for (int i = 0; i < positions.length; i++) {
+            positions[i].x = x[i];
+        }
+    }
+
+    public void setYPositions(float[] y) {
+        for (int i = 0; i < positions.length; i++) {
+            positions[i].y = y[i];
+        }
     }
 
     public void setFullShape(Sprite[] fullShape) {
@@ -157,9 +169,9 @@ public class TShape {
 
         return temp;
     }
-    
+
     protected void setActiveBoundaries(Vector2[] bounds) {
-        
+
     }
 
     public void activateTShapeBoundaries() {
@@ -223,22 +235,16 @@ public class TShape {
 
     // Increment left or right.
     public void increment(int pos) {
-    }
+        for (int i = 1; i < positions.length; i++) {
+            if (positions[i].x == positions[0].x) {
+                positions[i].x = state.getHorizontalIncrements()[pos];
+            } else {
+                positions[i].x += MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER;
+            }
+            Gdx.app.log(TAG, "positions[i].x: " + positions[i].x);
+        }
+        positions[0].x = state.getHorizontalIncrements()[pos];
 
-    /**
-     * Stop all sprites from descending. Will change for sprite rotation.
-     *
-     * @param bottomSprite The y position of the bottom-most sprite.
-     */
-    public void stop(float bottomSprite) {
-
-    }
-    
-    /**
-     * Set rectangle boundaries for each sprite for collision detection.
-     */
-    protected void setActiveBoundaries() {
-        
     }
 
     public Body getBody() {
@@ -283,6 +289,14 @@ public class TShape {
 
     public float getRotation() {
         return squares.get(YELLOW).getRotation();
+    }
+
+    public int getTileWidth() {
+        return tileWidth;
+    }
+
+    public void setTileWidth(int tileWidth) {
+        this.tileWidth = tileWidth;
     }
 
     /**

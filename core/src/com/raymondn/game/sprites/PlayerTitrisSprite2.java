@@ -29,6 +29,7 @@ public class PlayerTitrisSprite2 {
     private float DESCENT_SPEED = (float) oneSecond / 2;
     private String TAG = "Class: PlayerTitrisSprite2";
     private int verticalIncrement = 32;
+    private int horizontalIncrement = 0;
 
     public PlayerTitrisSprite2(PlayState state) {
         ps = state;
@@ -61,6 +62,24 @@ public class PlayerTitrisSprite2 {
     }
 
     public void setX(boolean movingRight) {
+        float[] xPos = new float[activeTitris.getPositions().length];
+//        pos[0].y = activeTitris.getPositions()[0].y;
+
+//            pos[i] = new Vector2();
+//            pos[i].x = activeTitris.getPositions()[i].x;
+        if (movingRight
+                && (horizontalIncrement + activeTitris.getTileWidth()) < 10) {
+            horizontalIncrement++;
+        }
+        if (!movingRight && horizontalIncrement > 0) {
+            horizontalIncrement--;
+        }
+        
+//        for (int i = 0; i < xPos.length; i++) {
+//            xPos[i] = ps.getHorizontalIncrements()[horizontalIncrement];
+//        }
+//        activeTitris.setXPositions(xPos);
+        activeTitris.increment(horizontalIncrement);
 
     }
 
@@ -74,30 +93,32 @@ public class PlayerTitrisSprite2 {
         }
 
         // Set the descent of each sprite.
-        Vector2[] pos = new Vector2[activeTitris.getPositions().length];
+//        Vector2[] pos = new Vector2[activeTitris.getPositions().length];
+        float[] yPos = new float[activeTitris.getPositions().length];
         boolean stopDescent = false;
         for (int i = 0; i < activeTitris.getPositions().length; i++) {
-            pos[i] = new Vector2();
-            pos[i].x = activeTitris.getPositions()[i].x;
+//            pos[i] = new Vector2();
+//            pos[i].x = activeTitris.getPositions()[i].x;
 
             // If lowest point of sprite touches the base of the well or another 
             // sprite, stop the descending sprite.
             if (activeTitris.lowestPoint() == ps.getVerticalIncrements()[0]) {
-                pos[i].y = ps.getVerticalIncrements()[0];
+//                pos[i].y = ps.getVerticalIncrements()[0];
+                yPos[i] = ps.getVerticalIncrements()[0];
                 stopDescent = true;
-            } 
-            
-            // Else if the space below the descending sprite is an active static
+            } // Else if the space below the descending sprite is an active static
             // body, stop descent.
             else if (verticalIncrement > 0 && PlayState.WELL_SPACES[verticalIncrement - 1][i].isActivatedPhysicsSquare()) {
-                pos[i].y = ps.getVerticalIncrements()[verticalIncrement];
+//                pos[i].y = ps.getVerticalIncrements()[verticalIncrement];
+                yPos[i] = ps.getVerticalIncrements()[verticalIncrement];
                 stopDescent = true;
             } else {
-                pos[i].y = ps.getVerticalIncrements()[verticalIncrement];
+//                pos[i].y = ps.getVerticalIncrements()[verticalIncrement];
+                yPos[i] = ps.getVerticalIncrements()[verticalIncrement];
             }
         }
 
-        activeTitris.setPositions(pos);
+        activeTitris.setYPositions(yPos);
 
         // Activate static body when shape stops moving.
         if (stopDescent) {
@@ -118,11 +139,11 @@ public class PlayerTitrisSprite2 {
                         DecimalFormat df = new DecimalFormat("###.##");
                         float activeTitrisX = Float.valueOf(df.format(activeTitris.getPositions()[p].x));
 
-//                        Gdx.app.log(TAG, "pos: " + p
-//                                + " \nactiveTitris.getPositions()[p].x: "
-//                                + activeTitrisX
-//                                + " \nPlayState.WELL_SPACES[row][col].getXY().x: "
-//                                + PlayState.WELL_SPACES[row][col].getXY().x);
+                        Gdx.app.log(TAG, "pos: " + p
+                                + " \nactiveTitris.getPositions()[p].x: "
+                                + activeTitrisX
+                                + " \nPlayState.WELL_SPACES[row][col].getXY().x: "
+                                + PlayState.WELL_SPACES[row][col].getXY().x);
                         if (PlayState.WELL_SPACES[row][col].getXY().y
                                 == activeTitris.getPositions()[p].y
                                 && PlayState.WELL_SPACES[row][col].getXY().x

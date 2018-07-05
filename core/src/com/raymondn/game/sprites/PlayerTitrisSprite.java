@@ -145,7 +145,7 @@ public class PlayerTitrisSprite {
                 Gdx.app.log(TAG, ex.toString());
             }
 //            positions[0].y = activeTitris.getBody().getPosition().y - ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2);
-            activeTitris.stop(activeTitris.getBody().getPosition().y - ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2));
+//            activeTitris.stop(activeTitris.getBody().getPosition().y - ((MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) / 2));
         }
 
     }

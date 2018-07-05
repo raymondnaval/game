@@ -21,7 +21,7 @@ import java.text.DecimalFormat;
  *
  * @author Raymond Naval <raymondnaval@gmail.com>
  */
-public class TShapeStraightThree extends TShape {
+public class TShapeStraightThree extends TShape implements TShapeInterface {
 
     private Sprite[] squares;
     private Vector2 physicsBoxPosition;
@@ -32,6 +32,7 @@ public class TShapeStraightThree extends TShape {
 
     public TShapeStraightThree(PlayState ps) {
         super(ps);
+        tileWidth = 3;
         squares = getRandomSquares(TOTAL_SQUARES);
         spritePositions = new Vector2[TOTAL_SQUARES];
         activeBoundaries = new Rectangle[TOTAL_SQUARES];
@@ -111,7 +112,7 @@ public class TShapeStraightThree extends TShape {
     }
 
     @Override
-    public void setActiveBoundaries(Vector2[] positions) {
+    public void setActiveBoundaries() {
         for (int i = 0; i < spritePositions.length; i++) {
             DecimalFormat df = new DecimalFormat("###.##");
             float roundHorzPosTo2DecimalPlaces = Float.valueOf(df.format(spritePositions[i].x + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER)));
@@ -126,6 +127,16 @@ public class TShapeStraightThree extends TShape {
     @Override
     public float getWidth() {
         return width / 3 / MainGame.PIXELS_PER_METER;
+    }
+    
+    @Override
+    public int getTileWidth() {
+        return tileWidth;
+    }
+    
+    @Override
+    public void setTileWidth(int tileWidth) {
+        this.tileWidth = tileWidth;
     }
 
 }
