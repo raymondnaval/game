@@ -1,6 +1,18 @@
 # New Game
 Creating a game using the LibGdx engine. Could be Metroidvania style. Could be Connect 4. Could be both.
 
+8/9/18
+- Successfully got 2 blocks to descend.
+
+6/27/18
+- Removed the physics from descending blocks. They now fall in a grid-like pattern.
+
+6/6/18
+- Rewrote falling blocks so that each square is its own sprite, which results in randomly generated colored blocks.
+
+4/19/18
+- Created new branch for getting the descending block right.
+
 4/19/18
 - Descending image with fixed speed.
 - Option to increase descent of image.

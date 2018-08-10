@@ -18,7 +18,7 @@ import com.raymondn.game.states.PlayState;
  *
  * @author Raymond Naval <raymondnaval@gmail.com>
  */
-public class PlayerSprite extends Sprite {
+public class PlayerShooterSprite extends Sprite {
 
     public World world;
     public Body box2dBody;
@@ -35,7 +35,7 @@ public class PlayerSprite extends Sprite {
     };
     public State currentState, previousState;
 
-    public PlayerSprite(World world, PlayState state) {
+    public PlayerShooterSprite(World world, PlayState state) {
         super(state.getAtlas().findRegion("protaganist"));
         this.world = world;
 
