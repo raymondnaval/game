@@ -19,6 +19,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.raymondn.game.MainGame;
 import com.raymondn.game.states.PlayState;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -48,7 +49,7 @@ public class TShape {
     private Vector2[] positions;
     private final String TAG = "Class: TShape";
     private Vector2 startingPosition;
-    protected int tileWidth;
+    protected int tileWidth, tileHeight;
 
     // Sprite boundaries for collision detection.
     protected Rectangle[] activeBoundaries;
@@ -170,10 +171,6 @@ public class TShape {
         return temp;
     }
 
-    protected void setActiveBoundaries(Vector2[] bounds) {
-
-    }
-
     public void activateTShapeBoundaries() {
     }
 
@@ -244,7 +241,7 @@ public class TShape {
             Gdx.app.log(TAG, "positions[i].x: " + positions[i].x);
         }
         positions[0].x = state.getHorizontalIncrements()[pos];
-
+        Gdx.app.log(TAG, "increment");
     }
 
     public Body getBody() {
@@ -294,9 +291,13 @@ public class TShape {
     public int getTileWidth() {
         return tileWidth;
     }
-
+   
     public void setTileWidth(int tileWidth) {
         this.tileWidth = tileWidth;
+    }
+    
+    public int getTileHeight() {
+        return tileHeight;
     }
 
     /**
@@ -304,5 +305,11 @@ public class TShape {
      * Method must be overidden in child classes.
      */
     protected void positionSprites() {
+    }
+    
+    public float roundFloatTo2Decimals(float val) {
+        DecimalFormat df = new DecimalFormat("###.##");
+        return Float.valueOf(df.format(val 
+                + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER)));
     }
 }

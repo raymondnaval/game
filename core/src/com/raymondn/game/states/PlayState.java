@@ -118,6 +118,8 @@ public class PlayState implements Screen, InputProcessor {
 
         ocl = new ObjectContactListener(activeTitrisPiece);
         world.setContactListener(ocl);
+        
+//        debugSideWalls();
     }
 
     /**
@@ -338,6 +340,35 @@ public class PlayState implements Screen, InputProcessor {
     @Override
     public boolean scrolled(int amount) {
         return false;
+    }
+    
+    private void debugSideWalls() {
+        WELL_SPACES[0][0].activatePhysicsSquare(true);
+        WELL_SPACES[1][0].activatePhysicsSquare(true);
+        WELL_SPACES[2][0].activatePhysicsSquare(true);
+        WELL_SPACES[3][0].activatePhysicsSquare(true);
+        WELL_SPACES[4][0].activatePhysicsSquare(true);
+        WELL_SPACES[5][0].activatePhysicsSquare(true);
+        WELL_SPACES[6][0].activatePhysicsSquare(true);
+        WELL_SPACES[7][0].activatePhysicsSquare(true);
+        WELL_SPACES[8][0].activatePhysicsSquare(true);
+        WELL_SPACES[9][0].activatePhysicsSquare(true);
+        WELL_SPACES[0][9].activatePhysicsSquare(true);
+        WELL_SPACES[1][9].activatePhysicsSquare(true);
+        WELL_SPACES[2][9].activatePhysicsSquare(true);
+        WELL_SPACES[3][9].activatePhysicsSquare(true);
+        WELL_SPACES[4][9].activatePhysicsSquare(true);
+        WELL_SPACES[5][9].activatePhysicsSquare(true);
+        WELL_SPACES[6][9].activatePhysicsSquare(true);
+        WELL_SPACES[7][9].activatePhysicsSquare(true);
+        WELL_SPACES[8][9].activatePhysicsSquare(true);
+        WELL_SPACES[9][9].activatePhysicsSquare(true);
+        WELL_SPACES[9][8].activatePhysicsSquare(true);
+        WELL_SPACES[9][7].activatePhysicsSquare(true);
+        WELL_SPACES[9][6].activatePhysicsSquare(true);
+        WELL_SPACES[8][7].activatePhysicsSquare(true);
+        WELL_SPACES[8][6].activatePhysicsSquare(true);
+        
     }
 
 }
