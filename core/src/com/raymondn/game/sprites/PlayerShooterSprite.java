@@ -34,18 +34,22 @@ public class PlayerShooterSprite extends Sprite {
         STANDING, RUNNING, JUMPING
     };
     public State currentState, previousState;
+    private final String TAG = "Class: PlayerShooterSprite";
 
     public PlayerShooterSprite(World world, PlayState state) {
-        super(state.getAtlas().findRegion("protaganist"));
+        super(new Texture("sprite_sheet.png"));
         this.world = world;
+//        definePlayerSprite();
+        playerStand = new TextureRegion(getTexture(), 0, 0, 16, 32);
+        setBounds(0, 0, 16 / MainGame.PIXELS_PER_METER, 32 / MainGame.PIXELS_PER_METER);
+        setRegion(playerStand);
 
         // Animation.
-        currentState = State.STANDING;
-        previousState = State.STANDING;
-        stateTimer = 0;
-        movingRight = true;
-        Array<TextureRegion> frames = new Array<TextureRegion>();
-
+//        currentState = State.STANDING;
+//        previousState = State.STANDING;
+//        stateTimer = 0;
+//        movingRight = true;
+//        Array<TextureRegion> frames = new Array<TextureRegion>();
         // Add moving animation frames to playerRun object.
 //        for (int i = 1; i < 3; i++) {
 //            frames.add(new TextureRegion(getTexture(), i * playerSizeX, 0, playerSizeX, playerSizeY));
@@ -53,11 +57,9 @@ public class PlayerShooterSprite extends Sprite {
 //            System.out.println(i * playerSizeX);
 //        }
 //        frames.clear();
-        definePlayerSprite();
-        playerStand = new TextureRegion(new Texture("protaganist_small.png"), 0, 0, playerSizeX, playerSizeY);
-        setBounds(0, 0, playerSizeX / MainGame.PIXELS_PER_METER, playerSizeY / MainGame.PIXELS_PER_METER);
-        Gdx.app.log("width coord: height coord", MainGame.WIDTH / 2 / MainGame.PIXELS_PER_METER + "," + ((MainGame.WIDTH / 2) + playerSizeX) / MainGame.PIXELS_PER_METER + " : ");
-        setRegion(playerStand);
+//        playerStand = new TextureRegion(new Texture("protaganist_small.png"), 0, 0, playerSizeX, playerSizeY);
+//        setBounds(0, 0, playerSizeX / MainGame.PIXELS_PER_METER, playerSizeY / MainGame.PIXELS_PER_METER);
+        Gdx.app.log(TAG, "width coord: height coord: " + MainGame.WIDTH / 2 / MainGame.PIXELS_PER_METER + "," + ((MainGame.WIDTH / 2) + playerSizeX) / MainGame.PIXELS_PER_METER + " : ");
     }
 
     public void update(float deltaTime) {
@@ -104,10 +106,10 @@ public class PlayerShooterSprite extends Sprite {
 
     public void definePlayerSprite() {
         BodyDef bdef = new BodyDef();
-        
+
         // Set starting position of sprite.
-        bdef.position.set(MainGame.WIDTH / 2 / MainGame.PIXELS_PER_METER, MainGame.HEIGHT / MainGame.PIXELS_PER_METER);
-        
+        bdef.position.set(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, MainGame.WIDTH / 2 / MainGame.PIXELS_PER_METER);
+
         bdef.type = BodyDef.BodyType.DynamicBody;
 
         box2dBody = world.createBody(bdef);

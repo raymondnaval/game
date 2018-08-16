@@ -32,6 +32,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.raymondn.game.MainGame;
+import com.raymondn.game.sprites.PlayerShooterSprite;
 import com.raymondn.game.sprites.PlayerTitrisSprite;
 import com.raymondn.game.sprites.PlayerTitrisSprite2;
 import com.raymondn.game.sprites.TitrisSquare;
@@ -48,6 +49,7 @@ public class PlayState implements Screen, InputProcessor {
 
     private final String TAG = "Class: PlayState";
     private PlayerTitrisSprite2 activeTitrisPiece;
+    private PlayerShooterSprite player1;
     private ArrayList<PlayerTitrisSprite2> titrisPieces;
     private Viewport gamePort;
     private MainGame game;
@@ -113,6 +115,8 @@ public class PlayState implements Screen, InputProcessor {
         activeTitrisPiece = new PlayerTitrisSprite2(this);
         titrisPieces = new ArrayList<PlayerTitrisSprite2>();
         titrisPieces.add(activeTitrisPiece);
+        
+        player1 = new PlayerShooterSprite(world, this);
 
         Gdx.input.setInputProcessor(this);
 
@@ -178,6 +182,9 @@ public class PlayState implements Screen, InputProcessor {
     public void update(float dt) {
         handleInput(dt);
         world.step(1 / 60f, 6, 2);
+        
+        // Update player sprite.
+//        player1.update(dt);
 
         // Update game camera with correct coordinates after changes.
         gameView.update();
@@ -240,6 +247,7 @@ public class PlayState implements Screen, InputProcessor {
                         titrisPieces.get(i).getRotation());
             }
         }
+        player1.draw(game.getBatch());
         game.getBatch().end();
     }
 

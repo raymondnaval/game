@@ -29,7 +29,7 @@ public class PlayerTitrisSprite2 {
     private PlayState ps;
     private TShape[] tPieces;
     private static float oneSecond = 1f;
-    public final static float DESCENT_SPEED = oneSecond / 6;
+    public final static float DESCENT_SPEED = oneSecond / 4;
     private String TAG = "Class: PlayerTitrisSprite2";
     private int verticalIncrement = 31; // One below the top.
     private int horizontalIncrement = 0;
