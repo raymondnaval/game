@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.raymondn.game.MainGame;
@@ -24,11 +25,11 @@ public class PlayerShooterSprite extends Sprite {
     public Body box2dBody;
     private TextureRegion playerStand;
     private int playerSizeX = 16;
-    private int playerSizeY = 16;
+    private int playerSizeY = 32;
 //    private Animation<TextureRegion> playerRun;
     private Animation<TextureRegion> playerJump;
     private float stateTimer;
-    private boolean movingRight;
+    private boolean movingRight = true;
 
     public enum State {
         STANDING, RUNNING, JUMPING
@@ -39,9 +40,9 @@ public class PlayerShooterSprite extends Sprite {
     public PlayerShooterSprite(World world, PlayState state) {
         super(new Texture("sprite_sheet.png"));
         this.world = world;
-//        definePlayerSprite();
-        playerStand = new TextureRegion(getTexture(), 0, 0, 16, 32);
-        setBounds(0, 0, 16 / MainGame.PIXELS_PER_METER, 32 / MainGame.PIXELS_PER_METER);
+        definePlayerSprite();
+        playerStand = new TextureRegion(getTexture(), 0, 0, playerSizeX, playerSizeY);
+        setBounds(0, 0, playerSizeX / MainGame.PIXELS_PER_METER, playerSizeY / MainGame.PIXELS_PER_METER);
         setRegion(playerStand);
 
         // Animation.
@@ -58,7 +59,6 @@ public class PlayerShooterSprite extends Sprite {
 //        }
 //        frames.clear();
 //        playerStand = new TextureRegion(new Texture("protaganist_small.png"), 0, 0, playerSizeX, playerSizeY);
-//        setBounds(0, 0, playerSizeX / MainGame.PIXELS_PER_METER, playerSizeY / MainGame.PIXELS_PER_METER);
         Gdx.app.log(TAG, "width coord: height coord: " + MainGame.WIDTH / 2 / MainGame.PIXELS_PER_METER + "," + ((MainGame.WIDTH / 2) + playerSizeX) / MainGame.PIXELS_PER_METER + " : ");
     }
 
@@ -108,16 +108,31 @@ public class PlayerShooterSprite extends Sprite {
         BodyDef bdef = new BodyDef();
 
         // Set starting position of sprite.
-        bdef.position.set(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, MainGame.WIDTH / 2 / MainGame.PIXELS_PER_METER);
+        bdef.position.set(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, MainGame.WELL_DEPTH);
 
         bdef.type = BodyDef.BodyType.DynamicBody;
 
         box2dBody = world.createBody(bdef);
         FixtureDef fdef = new FixtureDef();
-        CircleShape shape = new CircleShape();
+//        CircleShape shape = new CircleShape();
+        PolygonShape shape = new PolygonShape();
 
-        shape.setRadius((playerSizeX / 2) / MainGame.PIXELS_PER_METER);
+        shape.setAsBox(playerSizeX / 2 / MainGame.PIXELS_PER_METER, playerSizeY / 2 / MainGame.PIXELS_PER_METER);
         fdef.shape = shape;
         box2dBody.createFixture(fdef);
+    }
+
+    public void moveRight() {
+
+//        box2dBody.applyLinearImpulse(new Vector2(1, 0), box2dBody.getWorldCenter(), true);
+        box2dBody.setLinearVelocity(1,0);
+    }
+    
+    public void moveLeft() {
+        box2dBody.setLinearVelocity(-1,0);
+    }
+
+    public void stop() {
+        box2dBody.setLinearVelocity(0,0);
     }
 }

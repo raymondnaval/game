@@ -115,14 +115,14 @@ public class PlayState implements Screen, InputProcessor {
         activeTitrisPiece = new PlayerTitrisSprite2(this);
         titrisPieces = new ArrayList<PlayerTitrisSprite2>();
         titrisPieces.add(activeTitrisPiece);
-        
+
         player1 = new PlayerShooterSprite(world, this);
 
         Gdx.input.setInputProcessor(this);
 
         ocl = new ObjectContactListener(activeTitrisPiece);
         world.setContactListener(ocl);
-        
+
 //        debugSideWalls();
     }
 
@@ -182,9 +182,9 @@ public class PlayState implements Screen, InputProcessor {
     public void update(float dt) {
         handleInput(dt);
         world.step(1 / 60f, 6, 2);
-        
+
         // Update player sprite.
-//        player1.update(dt);
+        player1.update(dt);
 
         // Update game camera with correct coordinates after changes.
         gameView.update();
@@ -284,6 +284,15 @@ public class PlayState implements Screen, InputProcessor {
                 titrisPieces.get(titrisPieces.size() - 1).pause(true);
             }
         }
+
+        // Move shooter sprite.
+        if (keycode == Keys.D) {
+            player1.moveRight();
+        }
+        if (keycode == Keys.A) {
+            player1.moveLeft();
+        }
+
         return true;
     }
 
@@ -291,6 +300,13 @@ public class PlayState implements Screen, InputProcessor {
     public boolean keyUp(int keycode) {
         if (keycode == Keys.DOWN) {
             titrisPieces.get(titrisPieces.size() - 1).accelerateDescent(false);
+        }
+        if (keycode == Keys.D) {
+            player1.stop();
+        }
+        
+        if (keycode == Keys.A) {
+            player1.stop();
         }
         return true;
     }
@@ -349,7 +365,7 @@ public class PlayState implements Screen, InputProcessor {
     public boolean scrolled(int amount) {
         return false;
     }
-    
+
     private void debugSideWalls() {
         WELL_SPACES[0][0].activatePhysicsSquare(true);
         WELL_SPACES[1][0].activatePhysicsSquare(true);
@@ -376,7 +392,7 @@ public class PlayState implements Screen, InputProcessor {
         WELL_SPACES[9][6].activatePhysicsSquare(true);
         WELL_SPACES[8][7].activatePhysicsSquare(true);
         WELL_SPACES[8][6].activatePhysicsSquare(true);
-        
+
     }
 
 }
