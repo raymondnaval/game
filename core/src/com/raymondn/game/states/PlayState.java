@@ -5,6 +5,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -19,6 +23,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -32,6 +37,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.raymondn.game.MainGame;
+import com.raymondn.game.controller.GameController;
 import com.raymondn.game.sprites.PlayerShooterSprite;
 import com.raymondn.game.sprites.PlayerTitrisSprite;
 import com.raymondn.game.sprites.PlayerTitrisSprite2;
@@ -68,16 +74,16 @@ public class PlayState implements Screen, InputProcessor {
     private Body body;
     private Rectangle rect;
     private PolygonShape shape;
-
     private FixtureDef fixture = new FixtureDef();
 
     // 2D Array of x,y locations for every individual square in the titris well.
     public static final TitrisSquare[][] WELL_SPACES = new TitrisSquare[33][10];
 
     private float[] increments, verticalIncrements;
-
     private ObjectContactListener ocl;
     WorldCreator wc;
+
+    private GameController gc;
 
     public PlayState(MainGame game) {
         this.game = game;
@@ -97,7 +103,7 @@ public class PlayState implements Screen, InputProcessor {
         // Center game camera.
         gameView.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
-        world = new World(new Vector2(0, -0.1f), true);
+        world = new World(new Vector2(0, -10f), true);
         shape = new PolygonShape();
         box2DRenderer = new Box2DDebugRenderer();
         box2DRenderer.SHAPE_STATIC.set(1, 0, 0, 1);
@@ -119,10 +125,21 @@ public class PlayState implements Screen, InputProcessor {
         player1 = new PlayerShooterSprite(world, this);
 
         Gdx.input.setInputProcessor(this);
+        
+        if (Controllers.getControllers().size == 1) {
+            gc = new GameController(Controllers.getControllers().get(0), player1);
+            Controllers.addListener(gc);
+        }
+        
 
         ocl = new ObjectContactListener(activeTitrisPiece);
         world.setContactListener(ocl);
 
+//        for (Controller controller : Controllers.getControllers()) {
+//            Gdx.app.log(TAG, controller.getName());
+//        }
+        
+        
 //        debugSideWalls();
     }
 
@@ -176,7 +193,7 @@ public class PlayState implements Screen, InputProcessor {
     }
 
     protected void handleInput(float deltaTime) {
-
+        
     }
 
     public void update(float dt) {
@@ -304,7 +321,7 @@ public class PlayState implements Screen, InputProcessor {
         if (keycode == Keys.D) {
             player1.stop();
         }
-        
+
         if (keycode == Keys.A) {
             player1.stop();
         }
@@ -394,5 +411,4 @@ public class PlayState implements Screen, InputProcessor {
         WELL_SPACES[8][6].activatePhysicsSquare(true);
 
     }
-
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -41,8 +42,8 @@ public class PlayerShooterSprite extends Sprite {
         super(new Texture("sprite_sheet.png"));
         this.world = world;
         definePlayerSprite();
-        playerStand = new TextureRegion(getTexture(), 0, 0, playerSizeX, playerSizeY);
-        setBounds(0, 0, playerSizeX / MainGame.PIXELS_PER_METER, playerSizeY / MainGame.PIXELS_PER_METER);
+        playerStand = new TextureRegion(getTexture(), 0, 0, playerSizeX - 7, playerSizeY);
+        setBounds(0, 0, (playerSizeX - 7) / MainGame.PIXELS_PER_METER, playerSizeY / MainGame.PIXELS_PER_METER);
         setRegion(playerStand);
 
         // Animation.
@@ -89,7 +90,7 @@ public class PlayerShooterSprite extends Sprite {
             region.flip(true, false);
             movingRight = true;
         }
-
+//        Gdx.app.log(TAG, "linear velocity: " + box2dBody.getLinearVelocity());
         stateTimer = currentState == previousState ? stateTimer + delta : 0;
         previousState = currentState;
         return region;
@@ -123,16 +124,25 @@ public class PlayerShooterSprite extends Sprite {
     }
 
     public void moveRight() {
-
-//        box2dBody.applyLinearImpulse(new Vector2(1, 0), box2dBody.getWorldCenter(), true);
-        box2dBody.setLinearVelocity(1,0);
+        if (box2dBody.getLinearVelocity().x <= 2) {
+            box2dBody.applyLinearImpulse(new Vector2(1, 0), box2dBody.getWorldCenter(), true);
+        }
+//        box2dBody.setLinearVelocity(1,0);
     }
-    
+
     public void moveLeft() {
-        box2dBody.setLinearVelocity(-1,0);
+        if (box2dBody.getLinearVelocity().x >= -2) {
+            box2dBody.applyLinearImpulse(new Vector2(-1, 0), box2dBody.getWorldCenter(), true);
+        }
+        
+//        box2dBody.setLinearVelocity(-1, 0);
     }
 
     public void stop() {
-        box2dBody.setLinearVelocity(0,0);
+//        box2dBody.setLinearVelocity(0, 0);
+    }
+
+    public void jump() {
+        box2dBody.applyLinearImpulse(new Vector2(0, 4f), box2dBody.getWorldCenter(), true);
     }
 }

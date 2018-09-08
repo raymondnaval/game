@@ -15,6 +15,7 @@ public class DesktopLauncher {
         // Hey! Remove the physics from the titris pieces and setup an array or
         // something of inactive static bodies in each square. Activate the
         // static bodies when a sprite fills up its square. You fucking idiot.
-//         TODO: Add shooter sprite
+//         TODO: Get player to keep moving when direction is held down on
+// controller.
     }
 }
