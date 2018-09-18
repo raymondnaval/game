@@ -18,6 +18,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.raymondn.game.MainGame;
+import com.raymondn.game.sprites.SpritesheetCoordinates;
 import com.raymondn.game.states.PlayState;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -67,13 +68,41 @@ public class TShape {
         squareGraphics = new Texture(Gdx.files.internal("sprite_sheet.png"));
 
         squares = new HashMap(7);
-        squares.put(YELLOW, new Sprite(squareGraphics, 0, 64, 16, 16));
-        squares.put(GREEN, new Sprite(squareGraphics, 16, 64, 16, 16));
-        squares.put(RED, new Sprite(squareGraphics, 32, 64, 16, 16));
-        squares.put(BLUE, new Sprite(squareGraphics, 48, 64, 16, 16));
-        squares.put(LIGHT_PURPLE, new Sprite(squareGraphics, 64, 64, 16, 16));
-        squares.put(PURPLE, new Sprite(squareGraphics, 80, 64, 16, 16));
-        squares.put(BLACK, new Sprite(squareGraphics, 96, 64, 16, 16));
+        squares.put(YELLOW, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_YEL.x, 
+                (int) SpritesheetCoordinates.SQUARE_YEL.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
+        squares.put(GREEN, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_GRN.x, 
+                (int) SpritesheetCoordinates.SQUARE_GRN.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
+        squares.put(RED, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_RED.x, 
+                (int) SpritesheetCoordinates.SQUARE_RED.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
+        squares.put(BLUE, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_BLU.x, 
+                (int) SpritesheetCoordinates.SQUARE_BLU.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
+        squares.put(LIGHT_PURPLE, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_LPR.x, 
+                (int) SpritesheetCoordinates.SQUARE_LPR.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
+        squares.put(PURPLE, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_PRP.x, 
+                (int) SpritesheetCoordinates.SQUARE_PRP.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
+        squares.put(BLACK, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_BLK.x, 
+                (int) SpritesheetCoordinates.SQUARE_BLK.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
     }
 
     public TShape(Body body, Body bodyTEdge, PlayState ps) {
@@ -87,13 +116,41 @@ public class TShape {
         squareGraphics = new Texture(Gdx.files.internal("sprite_sheet.png"));
 
         squares = new HashMap(7);
-        squares.put(YELLOW, new Sprite(squareGraphics, 0, 64, 16, 16));
-        squares.put(GREEN, new Sprite(squareGraphics, 16, 64, 16, 16));
-        squares.put(RED, new Sprite(squareGraphics, 32, 64, 16, 16));
-        squares.put(BLUE, new Sprite(squareGraphics, 48, 64, 16, 16));
-        squares.put(LIGHT_PURPLE, new Sprite(squareGraphics, 64, 64, 16, 16));
-        squares.put(PURPLE, new Sprite(squareGraphics, 80, 64, 16, 16));
-        squares.put(BLACK, new Sprite(squareGraphics, 96, 64, 16, 16));
+        squares.put(YELLOW, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_YEL.x, 
+                (int) SpritesheetCoordinates.SQUARE_YEL.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
+        squares.put(GREEN, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_GRN.x, 
+                (int) SpritesheetCoordinates.SQUARE_GRN.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
+        squares.put(RED, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_RED.x, 
+                (int) SpritesheetCoordinates.SQUARE_RED.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
+        squares.put(BLUE, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_BLU.x, 
+                (int) SpritesheetCoordinates.SQUARE_BLU.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
+        squares.put(LIGHT_PURPLE, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_LPR.x, 
+                (int) SpritesheetCoordinates.SQUARE_LPR.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
+        squares.put(PURPLE, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_PRP.x, 
+                (int) SpritesheetCoordinates.SQUARE_PRP.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
+        squares.put(BLACK, new Sprite(squareGraphics, 
+                (int) SpritesheetCoordinates.SQUARE_BLK.x, 
+                (int) SpritesheetCoordinates.SQUARE_BLK.y, 
+                SpritesheetCoordinates.SQ_DIMENS, 
+                SpritesheetCoordinates.SQ_DIMENS));
     }
 
     protected Vector2 getStartingPosition() {
