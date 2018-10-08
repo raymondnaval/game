@@ -47,16 +47,10 @@ public class GameController extends ControllerAdapter {
                 pss.jump();
                 break;
             case 4:
-                if (!buttonHeldDown) {
-                    buttonHeldDown = true;
-                    pss.moveLeft();
-                }
+                pss.moveLeft(true);
                 break;
             case 5:
-                if (!buttonHeldDown) {
-                    buttonHeldDown = true;
-                    pss.moveRight();
-                }
+                pss.moveRight(true);
                 break;
             default:
                 Gdx.app.log(TAG, "button not used: " + buttonCode);
@@ -70,13 +64,13 @@ public class GameController extends ControllerAdapter {
 //        Gdx.app.log(TAG, "buttonUp: " + buttonCode);
         switch (buttonCode) {
             case 1:
-                
+
                 break;
             case 4:
-                buttonHeldDown = false;
+                pss.moveLeft(false);
                 break;
             case 5:
-                buttonHeldDown = false;
+                pss.moveRight(false);
                 break;
             default:
                 break;
@@ -87,6 +81,24 @@ public class GameController extends ControllerAdapter {
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
         Gdx.app.log(TAG, "axisCode: " + axisCode + " value: " + value);
+        switch (axisCode) {
+            case 2:
+                if (value <= -0.99f) {
+                    pss.moveLeft(true);
+                    Gdx.app.log(TAG, "move left");
+                } else if(value >= -0.004f && value < 1.0f) {
+                    pss.moveLeft(false);
+                    pss.moveRight(false);
+                    Gdx.app.log(TAG, "move right: false ");
+                } else if(value >= 1.0f) {
+                    pss.moveRight(true);
+                }
+                break;
+            case 3:
+                break;
+            default:
+                break;
+        }
         return false;
     }
 

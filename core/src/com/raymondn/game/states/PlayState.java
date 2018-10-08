@@ -304,13 +304,13 @@ public class PlayState implements Screen, InputProcessor {
 
         // Move shooter sprite.
         if (keycode == Keys.D) {
-            player1.moveRight();
+            player1.moveRight(true);
         }
         if (keycode == Keys.A) {
-            player1.moveLeft();
+            player1.moveLeft(true);
         }
 
-        return true;
+        return false;
     }
 
     @Override
@@ -319,13 +319,14 @@ public class PlayState implements Screen, InputProcessor {
             titrisPieces.get(titrisPieces.size() - 1).accelerateDescent(false);
         }
         if (keycode == Keys.D) {
-            player1.stop();
+            player1.moveRight(false);
+            Gdx.app.log(TAG, "movingRight: " + false);
         }
 
         if (keycode == Keys.A) {
-            player1.stop();
+            player1.moveLeft(false);
         }
-        return true;
+        return false;
     }
 
     @Override

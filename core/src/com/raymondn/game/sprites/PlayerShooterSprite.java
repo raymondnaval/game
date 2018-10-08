@@ -27,10 +27,10 @@ public class PlayerShooterSprite extends Sprite {
     private TextureRegion playerStand;
     private int playerSizeX = 16;
     private int playerSizeY = 32;
-//    private Animation<TextureRegion> playerRun;
+    private Animation<TextureRegion> playerRun;
     private Animation<TextureRegion> playerJump;
     private float stateTimer;
-    private boolean movingRight = true;
+    private boolean movingRight, movingLeft, facingRight = true;
 
     public enum State {
         STANDING, RUNNING, JUMPING
@@ -42,31 +42,84 @@ public class PlayerShooterSprite extends Sprite {
         super(new Texture("sprite_sheet.png"));
         this.world = world;
         definePlayerSprite();
-        playerStand = new TextureRegion(getTexture(), 0, 0, playerSizeX - 7, playerSizeY);
-        setBounds(0, 0, (playerSizeX - 7) / MainGame.PIXELS_PER_METER, playerSizeY / MainGame.PIXELS_PER_METER);
-        setRegion(playerStand);
+        
+        // Standing sprite.
+        playerStand = new TextureRegion(getTexture(),
+//                SpritesheetCoordinates.SH_STAND_X,
+//                SpritesheetCoordinates.SH_STAND_Y,
+//                SpritesheetCoordinates.SH_STAND_W,
+//                SpritesheetCoordinates.SH_STAND_H);
+                SpritesheetCoordinates.SH_WLK_X_0, 
+                SpritesheetCoordinates.SH_WLK_Y_0, 
+                SpritesheetCoordinates.SH_WLK_W_0, 
+                SpritesheetCoordinates.SH_WLK_H_0);
 
         // Animation.
-//        currentState = State.STANDING;
-//        previousState = State.STANDING;
-//        stateTimer = 0;
-//        movingRight = true;
-//        Array<TextureRegion> frames = new Array<TextureRegion>();
-        // Add moving animation frames to playerRun object.
-//        for (int i = 1; i < 3; i++) {
-//            frames.add(new TextureRegion(getTexture(), i * playerSizeX, 0, playerSizeX, playerSizeY));
-//            playerRun = new Animation(0.1f, frames);
-//            System.out.println(i * playerSizeX);
-//        }
-//        frames.clear();
-//        playerStand = new TextureRegion(new Texture("protaganist_small.png"), 0, 0, playerSizeX, playerSizeY);
-        Gdx.app.log(TAG, "width coord: height coord: " + MainGame.WIDTH / 2 / MainGame.PIXELS_PER_METER + "," + ((MainGame.WIDTH / 2) + playerSizeX) / MainGame.PIXELS_PER_METER + " : ");
-    }
+        currentState = State.STANDING;
+        previousState = State.STANDING;
+        stateTimer = 0;
+        Array<TextureRegion> frames = new Array<TextureRegion>();
 
-    public void update(float deltaTime) {
-        setPosition(box2dBody.getPosition().x - getWidth() / 2,
-                box2dBody.getPosition().y - getHeight() / 2);
-        setRegion(getFrame(deltaTime));
+        // Add moving animation frames to playerRun object.
+        frames.add(new TextureRegion(getTexture(), 
+                SpritesheetCoordinates.SH_WLK_X_0, 
+                SpritesheetCoordinates.SH_WLK_Y_0, 
+                SpritesheetCoordinates.SH_WLK_W_0, 
+                SpritesheetCoordinates.SH_WLK_H_0));
+        frames.add(new TextureRegion(getTexture(), 
+                SpritesheetCoordinates.SH_WLK_X_1, 
+                SpritesheetCoordinates.SH_WLK_Y_1, 
+                SpritesheetCoordinates.SH_WLK_W_1, 
+                SpritesheetCoordinates.SH_WLK_H_1));
+//                SpritesheetCoordinates.JUMP_X_0, 
+//                SpritesheetCoordinates.JUMP_Y_0, 
+//                SpritesheetCoordinates.JUMP_WDTH_0, 
+//                SpritesheetCoordinates.JMP_HEIGHT));
+        
+        frames.add(new TextureRegion(getTexture(), 
+                SpritesheetCoordinates.SH_WLK_X_2, 
+                SpritesheetCoordinates.SH_WLK_Y_2, 
+                SpritesheetCoordinates.SH_WLK_W_2, 
+                SpritesheetCoordinates.SH_WLK_H_2));
+        frames.add(new TextureRegion(getTexture(), 
+                SpritesheetCoordinates.SH_WLK_X_3, 
+                SpritesheetCoordinates.SH_WLK_Y_3, 
+                SpritesheetCoordinates.SH_WLK_W_3, 
+                SpritesheetCoordinates.SH_WLK_H_3));
+        frames.add(new TextureRegion(getTexture(), 
+                SpritesheetCoordinates.SH_WLK_X_4, 
+                SpritesheetCoordinates.SH_WLK_Y_4, 
+                SpritesheetCoordinates.SH_WLK_W_4, 
+                SpritesheetCoordinates.SH_WLK_H_4));
+//                SpritesheetCoordinates.JUMP_X_0, 
+//                SpritesheetCoordinates.JUMP_Y_0, 
+//                SpritesheetCoordinates.JUMP_WDTH_0, 
+//                SpritesheetCoordinates.JMP_HEIGHT));
+                
+        frames.add(new TextureRegion(getTexture(), 
+                SpritesheetCoordinates.SH_WLK_X_5, 
+                SpritesheetCoordinates.SH_WLK_Y_5, 
+                SpritesheetCoordinates.SH_WLK_W_5, 
+                SpritesheetCoordinates.SH_WLK_H_5));
+        frames.add(new TextureRegion(getTexture(), 
+                SpritesheetCoordinates.SH_WLK_X_6, 
+                SpritesheetCoordinates.SH_WLK_Y_6, 
+                SpritesheetCoordinates.SH_WLK_W_6, 
+                SpritesheetCoordinates.SH_WLK_H_6));
+        playerRun = new Animation(1/7f, frames);
+
+        frames.clear();
+
+//        setBounds(SpritesheetCoordinates.SH_STAND_X,
+//                SpritesheetCoordinates.SH_STAND_Y,
+//                SpritesheetCoordinates.SH_STAND_W / MainGame.PIXELS_PER_METER,
+//                SpritesheetCoordinates.SH_STAND_H / MainGame.PIXELS_PER_METER);
+setBounds(
+                SpritesheetCoordinates.SH_WLK_X_0, 
+                SpritesheetCoordinates.SH_WLK_Y_0, 
+                SpritesheetCoordinates.SH_WLK_W_0 / MainGame.PIXELS_PER_METER, 
+                SpritesheetCoordinates.SH_WLK_H_0 / MainGame.PIXELS_PER_METER);
+        setRegion(playerStand);
     }
 
     public TextureRegion getFrame(float delta) {
@@ -75,22 +128,23 @@ public class PlayerShooterSprite extends Sprite {
         TextureRegion region;
         switch (currentState) {
             case RUNNING:
-//                region = playerRun.getKeyFrame(stateTimer, true);
-//                break;
+                region = playerRun.getKeyFrame(stateTimer, true);
+                break;
             case STANDING:
             default:
                 region = playerStand;
                 break;
         }
 
-        if ((box2dBody.getLinearVelocity().x < 0 || !movingRight) && !region.isFlipX()) {
+        if ((box2dBody.getLinearVelocity().x < 0 || !facingRight) && !region.isFlipX()) {
             region.flip(true, false);
-            movingRight = false;
-        } else if ((box2dBody.getLinearVelocity().x > 0 || movingRight) && region.isFlipX()) {
+            facingRight = false;
+        } else if ((box2dBody.getLinearVelocity().x > 0 || facingRight) && region.isFlipX()) {
             region.flip(true, false);
-            movingRight = true;
+            facingRight = true;
         }
-//        Gdx.app.log(TAG, "linear velocity: " + box2dBody.getLinearVelocity());
+        
+        Gdx.app.log(TAG, "linear velocity: " + box2dBody.getLinearVelocity());
         stateTimer = currentState == previousState ? stateTimer + delta : 0;
         previousState = currentState;
         return region;
@@ -109,7 +163,7 @@ public class PlayerShooterSprite extends Sprite {
         BodyDef bdef = new BodyDef();
 
         // Set starting position of sprite.
-        bdef.position.set(MainGame.LEFT_WALL / MainGame.PIXELS_PER_METER, MainGame.WELL_DEPTH);
+        bdef.position.set((MainGame.LEFT_WALL + ((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 2)) / MainGame.PIXELS_PER_METER, MainGame.WELL_DEPTH);
 
         bdef.type = BodyDef.BodyType.DynamicBody;
 
@@ -123,23 +177,43 @@ public class PlayerShooterSprite extends Sprite {
         box2dBody.createFixture(fdef);
     }
 
-    public void moveRight() {
-        if (box2dBody.getLinearVelocity().x <= 2) {
-            box2dBody.applyLinearImpulse(new Vector2(1, 0), box2dBody.getWorldCenter(), true);
+    public void update(float deltaTime) {
+        setPosition(box2dBody.getPosition().x - getWidth() / 2,
+                box2dBody.getPosition().y - getHeight() / 2);
+        setRegion(getFrame(deltaTime));
+        setBounds(getX(),getY(),getWidth(),getHeight());
+        Gdx.app.log(TAG, "getX(),getY(),getWidth(),getHeight(): " + getX() + " " + getY());
+
+        if (movingLeft) {
+            if (box2dBody.getLinearVelocity().x >= -2) {
+                box2dBody.applyLinearImpulse(new Vector2(-.1f, 0),
+                        box2dBody.getWorldCenter(), true);
+            }
         }
-//        box2dBody.setLinearVelocity(1,0);
+
+        if (movingRight) {
+            if (box2dBody.getLinearVelocity().x <= 2) {
+                box2dBody.applyLinearImpulse(new Vector2(.1f, 0),
+                        box2dBody.getWorldCenter(), true);
+            }
+        }
+
     }
 
-    public void moveLeft() {
-        if (box2dBody.getLinearVelocity().x >= -2) {
-            box2dBody.applyLinearImpulse(new Vector2(-1, 0), box2dBody.getWorldCenter(), true);
-        }
-        
-//        box2dBody.setLinearVelocity(-1, 0);
+    public void moveRight(boolean movingRight) {
+        this.movingRight = movingRight;
+    }
+
+    public void moveLeft(boolean movingLeft) {
+        this.movingLeft = movingLeft;
+    }
+
+    public void shoot() {
+
     }
 
     public void stop() {
-//        box2dBody.setLinearVelocity(0, 0);
+        box2dBody.setLinearVelocity(0, 0);
     }
 
     public void jump() {
