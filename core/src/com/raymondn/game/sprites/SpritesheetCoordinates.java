@@ -58,7 +58,8 @@ public class SpritesheetCoordinates {
     public final static int EXPL_SM_H1 = 16;
 
     // Shooting.
-    public final static Vector2 SHTR_SHOOT = new Vector2(21, 32);
+    public final static int SHTR_SHT_X = 21;
+    public final static int SHTR_SHT_Y = 32;
     public final static int SHOOT_WDTH = 22;
     public final static int SHOOT_HGHT = 32;
 
@@ -90,10 +91,14 @@ public class SpritesheetCoordinates {
     public final static Vector2 PROJ_PRPL_1 = new Vector2(123, 42);
     public final static Vector2 PROJ_PRPL_2 = new Vector2(131, 32);
     public final static Vector2 PROJ_PRPL_3 = new Vector2(131, 42);
-    public final static Vector2 PROJ_BLCK_0 = new Vector2(139, 32);
-    public final static Vector2 PROJ_BLCK_1 = new Vector2(139, 42);
-    public final static Vector2 PROJ_BLCK_2 = new Vector2(147, 32);
-    public final static Vector2 PROJ_BLCK_3 = new Vector2(147, 42);
+    public final static int PROJ_BL_0_X = 139;
+    public final static int PROJ_BL_0_Y = 32;
+    public final static int PROJ_BL_1_X = 139;
+    public final static int PROJ_BL_1_Y = 42;
+    public final static int PROJ_BL_2_X = 147;
+    public final static int PROJ_BL_2_Y = 32;
+    public final static int PROJ_BL_3_X = 147;
+    public final static int PROJ_BL_3_Y = 42;
     
     // Squares.
     public final static int SQ_DIMENS = 16;

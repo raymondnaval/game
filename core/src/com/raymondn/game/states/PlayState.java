@@ -38,6 +38,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.raymondn.game.MainGame;
 import com.raymondn.game.controller.GameController;
+import com.raymondn.game.controller.KeyboardController;
 import com.raymondn.game.sprites.PlayerShooterSprite;
 import com.raymondn.game.sprites.PlayerTitrisSprite;
 import com.raymondn.game.sprites.PlayerTitrisSprite2;
@@ -83,8 +84,13 @@ public class PlayState implements Screen, InputProcessor {
     private ObjectContactListener ocl;
     WorldCreator wc;
 
+    // Controls.
     private GameController gc;
+    private KeyboardController kc;
 
+    // Spritesheet.
+    private Texture spritesheet;
+    
     public PlayState(MainGame game) {
         this.game = game;
 
@@ -112,20 +118,26 @@ public class PlayState implements Screen, InputProcessor {
         // Fill in all well spaces with Vector2 coordinates.
         for (int row = 0; row < WELL_SPACES.length; row++) {
             for (int col = 0; col < WELL_SPACES[row].length; col++) {
-//                Gdx.app.log(TAG, "increment x: " + increments[col]
-//                        + " increment y: " + verticalIncrements[row]);
                 WELL_SPACES[row][col] = new TitrisSquare(this, body, increments[col], verticalIncrements[row]);
             }
         }
+        
+        // Spritesheet
+        spritesheet = new Texture("sprite_sheet.png");
 
+        // Titris sprites.
         activeTitrisPiece = new PlayerTitrisSprite2(this);
         titrisPieces = new ArrayList<PlayerTitrisSprite2>();
         titrisPieces.add(activeTitrisPiece);
 
+        // Player sprite
         player1 = new PlayerShooterSprite(world, this);
 
-        Gdx.input.setInputProcessor(this);
-        
+        // Keyboard listener.
+        kc = new KeyboardController(player1, activeTitrisPiece);
+        Gdx.input.setInputProcessor(kc);
+
+        // Game controller listener.
         if (Controllers.getControllers().size == 1) {
             gc = new GameController(Controllers.getControllers().get(0), player1);
             Controllers.addListener(gc);
@@ -135,11 +147,6 @@ public class PlayState implements Screen, InputProcessor {
         ocl = new ObjectContactListener(activeTitrisPiece);
         world.setContactListener(ocl);
 
-//        for (Controller controller : Controllers.getControllers()) {
-//            Gdx.app.log(TAG, controller.getName());
-//        }
-        
-        
 //        debugSideWalls();
     }
 
@@ -170,6 +177,11 @@ public class PlayState implements Screen, InputProcessor {
             float roundHorzPosTo2DecimalPlaces = Float.valueOf(df.format(verticalIncrements[i - 1] + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER)));
             verticalIncrements[i] = roundHorzPosTo2DecimalPlaces;
         }
+    }
+    
+    
+    public Texture getSpriteCoords() {
+        return spritesheet;
     }
 
     public float[] getHorizontalIncrements() {

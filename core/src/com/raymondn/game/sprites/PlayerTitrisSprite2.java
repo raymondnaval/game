@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Timer;
 import com.raymondn.game.MainGame;
 import com.raymondn.game.sprites.shapes.TShape;
+import com.raymondn.game.sprites.shapes.TShapeBigE;
 import com.raymondn.game.sprites.shapes.TShapeC;
 import com.raymondn.game.sprites.shapes.TShapeStraightThree;
 import com.raymondn.game.states.PlayState;
@@ -41,7 +42,7 @@ public class PlayerTitrisSprite2 {
         tPieces = new TShape[6];
         tPieces[0] = new TShapeStraightThree(ps);
         tPieces[1] = new TShapeC(ps);
-//        tPieces[2] = new TShapeBigE(body, ps);
+        tPieces[2] = new TShapeBigE(ps);
 //        tPieces[3] = new TShapePlus(body, ps);
 //        tPieces[4] = new TShapeSingle(body, ps);
 //        tPieces[5] = new TShapeT(body, ps);
@@ -52,7 +53,7 @@ public class PlayerTitrisSprite2 {
     private TShape generateRandomTitris() {
         Random random = new Random();
 
-        return tPieces[random.nextInt(2)];
+        return tPieces[random.nextInt(3)];
 //        return tPieces[0];
     }
 
