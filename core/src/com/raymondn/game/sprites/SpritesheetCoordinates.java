@@ -64,7 +64,7 @@ public class SpritesheetCoordinates {
     public final static int SHOOT_HGHT = 32;
 
     // Projectiles.
-    public final static int PROJ_WIDTH = 8;
+    public final static int PROJ_WIDTH = 9;
     public final static int PROJ_HGT_0 = 10;
     public final static int PROJ_HGT_1 = 8;
     public final static Vector2 PROJ_BLUE_0 = new Vector2(43, 32);

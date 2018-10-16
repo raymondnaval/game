@@ -13,7 +13,10 @@ import com.raymondn.game.MainGame;
 import com.raymondn.game.sprites.shapes.TShape;
 import com.raymondn.game.sprites.shapes.TShapeBigE;
 import com.raymondn.game.sprites.shapes.TShapeC;
+import com.raymondn.game.sprites.shapes.TShapePlus;
+import com.raymondn.game.sprites.shapes.TShapeSingle;
 import com.raymondn.game.sprites.shapes.TShapeStraightThree;
+import com.raymondn.game.sprites.shapes.TShapeT;
 import com.raymondn.game.states.PlayState;
 import java.text.DecimalFormat;
 import java.util.Random;
@@ -43,9 +46,9 @@ public class PlayerTitrisSprite2 {
         tPieces[0] = new TShapeStraightThree(ps);
         tPieces[1] = new TShapeC(ps);
         tPieces[2] = new TShapeBigE(ps);
-//        tPieces[3] = new TShapePlus(body, ps);
-//        tPieces[4] = new TShapeSingle(body, ps);
-//        tPieces[5] = new TShapeT(body, ps);
+        tPieces[3] = new TShapePlus(ps);
+        tPieces[4] = new TShapeSingle(ps);
+        tPieces[5] = new TShapeT(ps);
 
         activeTitris = generateRandomTitris();
     }
@@ -53,8 +56,7 @@ public class PlayerTitrisSprite2 {
     private TShape generateRandomTitris() {
         Random random = new Random();
 
-        return tPieces[random.nextInt(3)];
-//        return tPieces[0];
+        return tPieces[random.nextInt(6)];
     }
 
     public void accelerateDescent(boolean isAccelerating) {
@@ -76,18 +78,16 @@ public class PlayerTitrisSprite2 {
         // && the open space to the right of the shape is empty
         // && the shape is above the base of the well
         // increment shape to the right.
-        if (movingRight
-                && horizontalIncrement + activeTitris.getTileWidth() < 10
-                && !PlayState.WELL_SPACES[verticalIncrement][horizontalIncrement + activeTitris.getTileWidth()]
-                        .isActivatedPhysicsSquare()
-                && !PlayState.WELL_SPACES[verticalIncrement + activeTitris.getTileHeight() - 1][horizontalIncrement + activeTitris.getTileWidth()]
-                        .isActivatedPhysicsSquare()
-                && verticalIncrement > 0) {
-
-            horizontalIncrement++;
-
-            Gdx.app.log(TAG, "horizontalIncrement: " + horizontalIncrement + " activeTitris.getTileWidth(): " + activeTitris.getTileWidth() + " activeTitris.getTileHeight(): " + activeTitris.getTileHeight());
-        }
+//        if (movingRight
+//                && horizontalIncrement + activeTitris.getTileWidth() < 10
+//                && !PlayState.WELL_SPACES[verticalIncrement][horizontalIncrement + activeTitris.getTileWidth()]
+//                        .isActivatedPhysicsSquare()
+//                && !PlayState.WELL_SPACES[verticalIncrement + activeTitris.getTileHeight() - 1][horizontalIncrement + activeTitris.getTileWidth()]
+//                        .isActivatedPhysicsSquare()
+//                && verticalIncrement > 0) {
+        test(movingRight);
+//            horizontalIncrement++;
+//        }
 
         if (!movingRight && horizontalIncrement > 0 && verticalIncrement > 0) {
 
@@ -100,6 +100,30 @@ public class PlayerTitrisSprite2 {
 
         }
         activeTitris.increment(horizontalIncrement);
+        Gdx.app.log(TAG, "horizontalIncrement: " + horizontalIncrement
+                + " activeTitris.getTileWidth(): " + activeTitris.getTileWidth()
+                + " activeTitris.getTileHeight(): "
+                + activeTitris.getTileHeight());
+    }
+
+    private void test(boolean movingRight) {
+        if (movingRight) {
+            if (horizontalIncrement + activeTitris.getTileWidth() < 10) {
+                if (verticalIncrement >= 0) {
+                Gdx.app.log(TAG, "verticalIncrement: " + verticalIncrement + " horizontalIncrement + activeTitris.getTileWidth(): " + (horizontalIncrement + activeTitris.getTileWidth()));
+                if (!PlayState.WELL_SPACES[verticalIncrement][horizontalIncrement + activeTitris.getTileWidth()]
+                        .isActivatedPhysicsSquare()) {
+                    if (!PlayState.WELL_SPACES[verticalIncrement + activeTitris.getTileHeight() - 1][horizontalIncrement + activeTitris.getTileWidth()]
+                            .isActivatedPhysicsSquare()) {
+
+                        
+
+                            horizontalIncrement++;
+                        }
+                    }
+                }
+            }
+        }
 
     }
 

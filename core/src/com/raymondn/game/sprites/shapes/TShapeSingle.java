@@ -27,9 +27,10 @@ public class TShapeSingle extends TShape {
     private final int TOTAL_SQUARES = 1; // Number of squres in graphic.
     private final String TAG = "Class: TShapeSingle";
 
-    public TShapeSingle(Body body, PlayState ps) {
-        super(body, ps);
-
+    public TShapeSingle(PlayState ps) {
+        super(ps);
+        tileWidth = 1;
+        tileHeight = 1;
         squares = getRandomSquares(TOTAL_SQUARES);
         spritePositions = new Vector2[TOTAL_SQUARES];
         setFullShape(squares);
@@ -40,46 +41,24 @@ public class TShapeSingle extends TShape {
     }
 
     @Override
-    public void activateTShapeBoundaries() {
-        // Create a polygon object because it is a unique shape.
-        // TODO: Create muliple convex polygons for concave polygons.
-        Rectangle rect = new Rectangle(
-                getStartingPosition().x, getStartingPosition().y,
-                width, height);
-
-        Vector2[] polygonVertices = new Vector2[6];
-        polygonVertices[0] = new Vector2(-width / MainGame.PIXELS_PER_METER / 2,
-                (height - MainGame.PIXEL_SIZE) / 2 / MainGame.PIXELS_PER_METER);
-        polygonVertices[1] = new Vector2(polygonVertices[0].x,
-                polygonVertices[0].y
-                - (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) * 2);
-        polygonVertices[2] = new Vector2(polygonVertices[0].x
-                + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) * 3,
-                polygonVertices[1].y);
-        polygonVertices[3] = new Vector2(polygonVertices[2].x,
-                polygonVertices[0].y);
-        polygonVertices[4] = new Vector2(polygonVertices[0].x
-                + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER) * 2,
-                polygonVertices[0].y);
-        polygonVertices[5] = new Vector2(polygonVertices[4].x,
-                -(MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER));
-//        polygonVertices[6] = new Vector2(0, 0);
-//        polygonVertices[7] = new Vector2(0, 0);
-        PolygonShape shape = new PolygonShape();
-        shape.set(polygonVertices);
-        physicsShapePosition = new Vector2((rect.getX() + rect.getWidth() / 2), (rect.getY() + rect.getHeight() / 2));
-        defineTitris(squares[0], physicsShapePosition,
-                (MainGame.PIXEL_SIZE / 2) / MainGame.PIXELS_PER_METER,
-                (height / 2) / MainGame.PIXELS_PER_METER, shape);
-
-        shape.dispose();
-    }
-
-    @Override
     protected void positionSprites() {
         spritePositions[0] = getStartingPosition();
         Gdx.app.log(TAG, "spritePositions: " + spritePositions[0]);
         setPositions(spritePositions);
     }
+    
+    @Override
+    public void increment(int pos) {
+        spritePositions[0].x = getState().getHorizontalIncrements()[pos];
+    }
+    
+    @Override
+    public int getTileWidth() {
+        return tileWidth;
+    }
 
+    @Override
+    public void setTileWidth(int tileWidth) {
+        this.tileWidth = tileWidth;
+    }
 }

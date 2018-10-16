@@ -33,9 +33,57 @@ public class KeyboardController extends InputAdapter {
     
     @Override
     public boolean keyDown(int keycode) {
+        
+        // If not paused, enable controls.
+        if (!pts.isPaused()) {
+            if (keycode == Keys.RIGHT) {
+                pts.setX(true);
+            }
+            if (keycode == Keys.LEFT) {
+                pts.setX(false);
+            }
+            if (keycode == Keys.DOWN) {
+                pts.accelerateDescent(true);
+            }
+            if (keycode == Keys.UP) {
+                pts.rotate();
+            }
+        }
+        
+        // Shoot projectile.
         if(keycode == Keys.F) {
             pss.shoot();
         }
+        
+        // Move shooter sprite.
+        if (keycode == Keys.D) {
+            pss.moveRight(true);
+        }
+        if (keycode == Keys.A) {
+            pss.moveLeft(true);
+        }
+        
+        // Shoot projectile.
+        if (keycode == Keys.F) {
+            pss.shoot();
+        }
+        return false;
+        
+    }
+    
+    public boolean keyUp(int keycode) {
+        if (keycode == Keys.DOWN) {
+            pts.accelerateDescent(false);
+        }
+        if (keycode == Keys.D) {
+            pss.moveRight(false);
+        }
+
+        if (keycode == Keys.A) {
+            pss.moveLeft(false);
+        }
+        
+        
         return false;
     }
 }

@@ -19,14 +19,14 @@ import com.raymondn.game.states.PlayState;
  * @author Raymond Naval <raymondnaval@gmail.com>
  */
 public class TShapeBigE extends TShape implements TShapeInterface {
-    
+
     private Sprite[] squares;
     private Vector2 physicsShapePosition;
     private Vector2[] spritePositions;
     private float height, width;
     private final int TOTAL_SQUARES = 8; // Number of squres in graphic.
     private final String TAG = "Class: TShapeBigE";
-    
+
     public TShapeBigE(PlayState ps) {
         super(ps);
         tileWidth = 5;
@@ -38,7 +38,7 @@ public class TShapeBigE extends TShape implements TShapeInterface {
         height = MainGame.PIXEL_SIZE * 2;
         width = MainGame.PIXEL_SIZE * 5;
     }
-    
+
     @Override
     protected void positionSprites() {
         spritePositions[0] = getStartingPosition();
@@ -63,7 +63,7 @@ public class TShapeBigE extends TShape implements TShapeInterface {
                 getStartingPosition().y);
         setPositions(spritePositions);
     }
-    
+
     @Override
     public void increment(int pos) {
         spritePositions[0].x = getState().getHorizontalIncrements()[pos];
@@ -79,17 +79,17 @@ public class TShapeBigE extends TShape implements TShapeInterface {
                 + (MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER);
         spritePositions[7].x = spritePositions[6].x;
     }
-  
-     @Override
+
+    @Override
     public int getTileWidth() {
         return tileWidth;
     }
-    
+
     @Override
     public void setTileWidth(int tileWidth) {
         this.tileWidth = tileWidth;
     }
-    
+
     @Override
     public void stop(float bottomSprite) {
 

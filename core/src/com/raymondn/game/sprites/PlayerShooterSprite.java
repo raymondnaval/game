@@ -39,11 +39,11 @@ public class PlayerShooterSprite extends Sprite {
     public State currentState, previousState;
     private final String TAG = "Class: PlayerShooterSprite";
 
-    public PlayerShooterSprite(World world, PlayState state) {
-        super(state.getSpriteCoords());
+    public PlayerShooterSprite(World world, PlayState state, ShooterProjectile sp) {
+        super(state.getSpritesheet());
         this.world = world;
+        projectile = sp;
         definePlayerSprite();
-        projectile = new ShooterProjectile();
 
         // Standing sprite.
         playerStand = new TextureRegion(getTexture(),
@@ -129,6 +129,7 @@ public class PlayerShooterSprite extends Sprite {
                 SpritesheetCoordinates.SH_WLK_Y_0,
                 SpritesheetCoordinates.SH_WLK_W_0 / MainGame.PIXELS_PER_METER,
                 SpritesheetCoordinates.SH_WLK_H_0 / MainGame.PIXELS_PER_METER);
+        
         setRegion(playerStand);
     }
 
@@ -174,8 +175,10 @@ public class PlayerShooterSprite extends Sprite {
     public void definePlayerSprite() {
         BodyDef bdef = new BodyDef();
 
-        // Set starting position of sprite.
-        bdef.position.set((MainGame.LEFT_WALL + ((MainGame.RIGHT_WALL - MainGame.LEFT_WALL) / 2)) / MainGame.PIXELS_PER_METER, MainGame.WELL_DEPTH);
+        // Set starting position of sprite boundary.
+        bdef.position.set((MainGame.LEFT_WALL + ((MainGame.RIGHT_WALL 
+                - MainGame.LEFT_WALL) / 2)) / MainGame.PIXELS_PER_METER, 
+                MainGame.WELL_DEPTH);
 
         bdef.type = BodyDef.BodyType.DynamicBody;
 
@@ -184,7 +187,8 @@ public class PlayerShooterSprite extends Sprite {
 //        CircleShape shape = new CircleShape();
         PolygonShape shape = new PolygonShape();
 
-        shape.setAsBox(playerSizeX / 2 / MainGame.PIXELS_PER_METER, playerSizeY / 2 / MainGame.PIXELS_PER_METER);
+        shape.setAsBox(playerSizeX / 2 / MainGame.PIXELS_PER_METER, 
+                playerSizeY / 2 / MainGame.PIXELS_PER_METER);
         fdef.shape = shape;
         box2dBody.createFixture(fdef);
     }
@@ -208,7 +212,7 @@ public class PlayerShooterSprite extends Sprite {
                         box2dBody.getWorldCenter(), true);
             }
         }
-
+        
     }
 
     public void moveRight(boolean movingRight) {
@@ -220,8 +224,8 @@ public class PlayerShooterSprite extends Sprite {
     }
 
     public void shoot() {
-        projectile.fire();
-        Gdx.app.log(TAG, "shoot");
+        float x = box2dBody.getPosition().x;
+        projectile.fire(x, box2dBody.getPosition().y);
     }
 
     public void stop() {

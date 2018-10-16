@@ -28,7 +28,7 @@ import java.util.Random;
  *
  * @author Raymond Naval <raymondnaval@gmail.com>
  */
-public class TShape {
+public abstract class TShape {
 
     public static final String YELLOW = "yellow";
     private static final String GREEN = "green";
@@ -51,6 +51,9 @@ public class TShape {
     private final String TAG = "Class: TShape";
     private Vector2 startingPosition;
     protected int tileWidth, tileHeight;
+    
+    // oneUnit is the length of one square.
+    protected float oneUnit = MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER;
 
     // Sprite boundaries for collision detection.
     protected Rectangle[] activeBoundaries;

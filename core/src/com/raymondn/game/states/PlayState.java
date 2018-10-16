@@ -42,6 +42,7 @@ import com.raymondn.game.controller.KeyboardController;
 import com.raymondn.game.sprites.PlayerShooterSprite;
 import com.raymondn.game.sprites.PlayerTitrisSprite;
 import com.raymondn.game.sprites.PlayerTitrisSprite2;
+import com.raymondn.game.sprites.ShooterProjectile;
 import com.raymondn.game.sprites.TitrisSquare;
 import com.raymondn.game.tools.ObjectContactListener;
 import com.raymondn.game.tools.WorldCreator;
@@ -57,6 +58,7 @@ public class PlayState implements Screen, InputProcessor {
     private final String TAG = "Class: PlayState";
     private PlayerTitrisSprite2 activeTitrisPiece;
     private PlayerShooterSprite player1;
+    private ShooterProjectile projectile;
     private ArrayList<PlayerTitrisSprite2> titrisPieces;
     private Viewport gamePort;
     private MainGame game;
@@ -90,7 +92,7 @@ public class PlayState implements Screen, InputProcessor {
 
     // Spritesheet.
     private Texture spritesheet;
-    
+
     public PlayState(MainGame game) {
         this.game = game;
 
@@ -121,7 +123,7 @@ public class PlayState implements Screen, InputProcessor {
                 WELL_SPACES[row][col] = new TitrisSquare(this, body, increments[col], verticalIncrements[row]);
             }
         }
-        
+
         // Spritesheet
         spritesheet = new Texture("sprite_sheet.png");
 
@@ -130,8 +132,9 @@ public class PlayState implements Screen, InputProcessor {
         titrisPieces = new ArrayList<PlayerTitrisSprite2>();
         titrisPieces.add(activeTitrisPiece);
 
-        // Player sprite
-        player1 = new PlayerShooterSprite(world, this);
+        // Player sprite and projectile sprite.
+        projectile = new ShooterProjectile(world, this);
+        player1 = new PlayerShooterSprite(world, this, projectile);
 
         // Keyboard listener.
         kc = new KeyboardController(player1, activeTitrisPiece);
@@ -142,7 +145,6 @@ public class PlayState implements Screen, InputProcessor {
             gc = new GameController(Controllers.getControllers().get(0), player1);
             Controllers.addListener(gc);
         }
-        
 
         ocl = new ObjectContactListener(activeTitrisPiece);
         world.setContactListener(ocl);
@@ -178,9 +180,8 @@ public class PlayState implements Screen, InputProcessor {
             verticalIncrements[i] = roundHorzPosTo2DecimalPlaces;
         }
     }
-    
-    
-    public Texture getSpriteCoords() {
+
+    public Texture getSpritesheet() {
         return spritesheet;
     }
 
@@ -205,7 +206,7 @@ public class PlayState implements Screen, InputProcessor {
     }
 
     protected void handleInput(float deltaTime) {
-        
+
     }
 
     public void update(float dt) {
@@ -214,6 +215,9 @@ public class PlayState implements Screen, InputProcessor {
 
         // Update player sprite.
         player1.update(dt);
+
+        // Update player projectile.
+        projectile.updateProjectile(dt);
 
         // Update game camera with correct coordinates after changes.
         gameView.update();
@@ -277,6 +281,9 @@ public class PlayState implements Screen, InputProcessor {
             }
         }
         player1.draw(game.getBatch());
+        if (!projectile.isProjectileDormant()) {
+            projectile.draw(game.getBatch());
+        }
         game.getBatch().end();
     }
 
@@ -312,14 +319,6 @@ public class PlayState implements Screen, InputProcessor {
             } else {
                 titrisPieces.get(titrisPieces.size() - 1).pause(true);
             }
-        }
-
-        // Move shooter sprite.
-        if (keycode == Keys.D) {
-            player1.moveRight(true);
-        }
-        if (keycode == Keys.A) {
-            player1.moveLeft(true);
         }
 
         return false;

@@ -9,6 +9,7 @@ import com.raymondn.game.states.PlayState;
 
 public class MainGame extends Game {
 
+    private float shrink10Percent = 0.9f;
     public static final int WIDTH = 800;
     public static final int HEIGHT = 720;
     public static final float PIXELS_PER_METER = 100;
