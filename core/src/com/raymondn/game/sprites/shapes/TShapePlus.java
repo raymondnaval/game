@@ -41,24 +41,22 @@ public class TShapePlus extends TShape {
 
     @Override
     protected void positionSprites() {
-        // oneUnit is the length of one square.
-        float oneUnit = MainGame.PIXEL_SIZE / MainGame.PIXELS_PER_METER;
-
-        spritePositions[0] = new Vector2(getStartingPosition().x,
+        
+        spritePositions[0] = new Vector2(getStartingPosition().x
+                + oneUnit,
+                getStartingPosition().y
+        - oneUnit);
+        spritePositions[1] = new Vector2(getStartingPosition().x,
                 getStartingPosition().y
                 - oneUnit);
-        spritePositions[1] = new Vector2(getStartingPosition().x
-                + oneUnit,
-                getStartingPosition().y);
-        spritePositions[2] = new Vector2(spritePositions[1].x
-                - oneUnit,
+        spritePositions[2] = new Vector2(spritePositions[1].x,
                 spritePositions[0].y);
         spritePositions[3] = new Vector2(spritePositions[2].x,
                 spritePositions[2].y
                 - oneUnit);
         spritePositions[4] = new Vector2(spritePositions[3].x
                 + oneUnit,
-                getStartingPosition().y);
+                spritePositions[0].y);
 
         setPositions(spritePositions);
     }

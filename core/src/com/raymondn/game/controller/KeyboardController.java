@@ -31,6 +31,10 @@ public class KeyboardController extends InputAdapter {
         this.pts = pts;
     }
     
+    public void setPts(PlayerTitrisSprite2 pts) {
+        this.pts = pts;
+    }
+    
     @Override
     public boolean keyDown(int keycode) {
         

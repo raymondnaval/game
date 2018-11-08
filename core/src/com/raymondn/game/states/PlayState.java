@@ -233,6 +233,7 @@ public class PlayState implements Screen, InputProcessor {
                 Gdx.app.log(TAG, ex.toString());
             }
             activeTitrisPiece = new PlayerTitrisSprite2(this);
+            kc.setPts(activeTitrisPiece); // Switch control to new titris piece.
             titrisPieces.add(activeTitrisPiece);
 
         } else {

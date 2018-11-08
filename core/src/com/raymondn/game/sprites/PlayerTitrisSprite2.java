@@ -43,20 +43,21 @@ public class PlayerTitrisSprite2 {
         ps = state;
 
         tPieces = new TShape[6];
-        tPieces[0] = new TShapeStraightThree(ps);
-        tPieces[1] = new TShapeC(ps);
-        tPieces[2] = new TShapeBigE(ps);
-        tPieces[3] = new TShapePlus(ps);
-        tPieces[4] = new TShapeSingle(ps);
-        tPieces[5] = new TShapeT(ps);
+//        tPieces[0] = new TShapeStraightThree(ps);
+//        tPieces[1] = new TShapeC(ps);
+//        tPieces[2] = new TShapeBigE(ps);
+        tPieces[0] = new TShapePlus(ps);
+//        tPieces[1] = new TShapeSingle(ps);
+//        tPieces[1] = new TShapeT(ps);
 
         activeTitris = generateRandomTitris();
+        Gdx.app.log(TAG, "verticalIncrement from constructor: " + verticalIncrement);
     }
 
     private TShape generateRandomTitris() {
         Random random = new Random();
 
-        return tPieces[random.nextInt(6)];
+        return tPieces[random.nextInt(1)];
     }
 
     public void accelerateDescent(boolean isAccelerating) {
@@ -79,12 +80,13 @@ public class PlayerTitrisSprite2 {
         // && the shape is above the base of the well
         // increment shape to the right.
 //        if (movingRight
+//                && (verticalIncrement + activeTitris.getTileHeight() - 1) <= 31
+//                && verticalIncrement > 0
 //                && horizontalIncrement + activeTitris.getTileWidth() < 10
 //                && !PlayState.WELL_SPACES[verticalIncrement][horizontalIncrement + activeTitris.getTileWidth()]
 //                        .isActivatedPhysicsSquare()
 //                && !PlayState.WELL_SPACES[verticalIncrement + activeTitris.getTileHeight() - 1][horizontalIncrement + activeTitris.getTileWidth()]
-//                        .isActivatedPhysicsSquare()
-//                && verticalIncrement > 0) {
+//                        .isActivatedPhysicsSquare()) {
         test(movingRight);
 //            horizontalIncrement++;
 //        }
@@ -100,25 +102,27 @@ public class PlayerTitrisSprite2 {
 
         }
         activeTitris.increment(horizontalIncrement);
-        Gdx.app.log(TAG, "horizontalIncrement: " + horizontalIncrement
-                + " activeTitris.getTileWidth(): " + activeTitris.getTileWidth()
-                + " activeTitris.getTileHeight(): "
-                + activeTitris.getTileHeight());
+//        Gdx.app.log(TAG, "horizontalIncrement: " + horizontalIncrement
+//                + " activeTitris.getTileWidth(): " + activeTitris.getTileWidth()
+//                + " activeTitris.getTileHeight(): "
+//                + activeTitris.getTileHeight());
     }
 
     private void test(boolean movingRight) {
         if (movingRight) {
+//            Gdx.app.log(TAG, "horizontalIncrement: " + horizontalIncrement + " tilewidth: " + activeTitris.getTileWidth());
             if (horizontalIncrement + activeTitris.getTileWidth() < 10) {
-                if (verticalIncrement >= 0) {
                 Gdx.app.log(TAG, "verticalIncrement: " + verticalIncrement + " horizontalIncrement + activeTitris.getTileWidth(): " + (horizontalIncrement + activeTitris.getTileWidth()));
-                if (!PlayState.WELL_SPACES[verticalIncrement][horizontalIncrement + activeTitris.getTileWidth()]
-                        .isActivatedPhysicsSquare()) {
-                    if (!PlayState.WELL_SPACES[verticalIncrement + activeTitris.getTileHeight() - 1][horizontalIncrement + activeTitris.getTileWidth()]
-                            .isActivatedPhysicsSquare()) {
+                if (verticalIncrement >= 0) {
+                    if (verticalIncrement + activeTitris.getTileHeight() - 1 <= 31) {
+                        if (!PlayState.WELL_SPACES[verticalIncrement][horizontalIncrement + activeTitris.getTileWidth()]
+                                .isActivatedPhysicsSquare()) {
+                            Gdx.app.log(TAG, "verticalincrement + tileheight: " + (verticalIncrement+activeTitris.getTileHeight()-1));
+                            if (!PlayState.WELL_SPACES[verticalIncrement + activeTitris.getTileHeight() - 1][horizontalIncrement + activeTitris.getTileWidth()]
+                                    .isActivatedPhysicsSquare()) {
 
-                        
-
-                            horizontalIncrement++;
+                                horizontalIncrement++;
+                            }
                         }
                     }
                 }
